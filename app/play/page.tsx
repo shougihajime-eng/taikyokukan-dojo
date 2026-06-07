@@ -360,6 +360,7 @@ export default function PlayPage() {
               actualWinrate={reveal.actualWinrate}
               absError={reveal.absError}
               explanation={reveal.explanation}
+              phaseTag={current.phaseTag}
             />
             <button
               type="button"

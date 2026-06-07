@@ -2,12 +2,14 @@
 // 判定の開示パネル: あなたの予測とAIの判定をメーターで見せ、テンプレ解説を出す。
 import { winratePercent } from "@/lib/eval";
 import type { Explanation } from "@/lib/explain";
+import MasterTips from "./MasterTips";
 
 interface Props {
   guessWinrate: number;
   actualWinrate: number;
   absError: number; // 勝率pt 0..1
   explanation: Explanation;
+  phaseTag?: string; // まめちしきの「見るコツ」切り替え用（opening/middle/endgame）
 }
 
 /** 誤差の大きさ → ひとことの評価 */
@@ -19,7 +21,7 @@ function errorRank(absError: number): { word: string; color: string } {
   return { word: "ズレ大", color: "#2e3458" };
 }
 
-export default function ResultReveal({ guessWinrate, actualWinrate, absError, explanation }: Props) {
+export default function ResultReveal({ guessWinrate, actualWinrate, absError, explanation, phaseTag }: Props) {
   const g = winratePercent(guessWinrate);
   const a = winratePercent(actualWinrate);
   const rank = errorRank(absError);
@@ -60,13 +62,17 @@ export default function ResultReveal({ guessWinrate, actualWinrate, absError, ex
         <span>▲先手よし</span>
       </div>
 
-      {/* テンプレ解説（エンジンデータのみ） */}
+      {/* テンプレ解説（エンジンデータ＋駒の損得の機械数えのみ） */}
       <div className="rounded-xl bg-[#fbf4e2] border border-amber-900/15 p-3 text-sm leading-relaxed flex flex-col gap-1">
         <p className="font-bold">{explanation.judgeText}</p>
+        {explanation.materialText && <p>{explanation.materialText}</p>}
         <p>{explanation.gapText}</p>
         {explanation.bestText && <p>{explanation.bestText}</p>}
         {explanation.pvText && <p className="text-xs opacity-80">{explanation.pvText}</p>}
       </div>
+
+      {/* 解説の名人のまめちしき（固定の一般知識） */}
+      <MasterTips phaseTag={phaseTag} />
     </div>
   );
 }
