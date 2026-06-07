@@ -1,26 +1,270 @@
 @import "tailwindcss";
 
+/* ===== 書体（駒・題字用。layout.tsx で必要な文字だけ読み込み） ===== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-kaisho: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+  --font-fude: "Yuji Syuku", "Yu Mincho", serif;
+  --font-maru: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  --font-dot: "DotGothic16", monospace;
+  --font-koma: var(--font-kaisho);
+
+  /* 和の基調色（墨・朱・金） */
+  --sumi: #3b2f1e;
+  --shu: #b32718;
+  --shu-light: #d8442e;
+  --kin: #c9a86a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* 和紙のようなあたたかい背景（うっすら粒子＋光） */
+  background:
+    radial-gradient(900px 480px at 50% -8%, rgba(255, 252, 240, 0.9) 0%, rgba(255, 252, 240, 0) 60%),
+    repeating-linear-gradient(-42deg, rgba(176, 130, 60, 0.022) 0 2px, rgba(255, 255, 255, 0) 2px 6px),
+    linear-gradient(180deg, #fbf4e2 0%, #f4e7cb 100%);
+  min-height: 100dvh;
+  color: var(--sumi);
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  overscroll-behavior-y: none;
+}
+
+/* 見出し・題字 */
+.font-fude { font-family: var(--font-fude); }
+.font-maru { font-family: var(--font-maru); }
+.font-mincho { font-family: var(--font-kaisho); }
+
+/* 落款（らっかん）風の赤い印 */
+.hanko {
+  display: inline-grid;
+  place-items: center;
+  width: 1.45em;
+  height: 1.45em;
+  border-radius: 0.22em;
+  background: linear-gradient(160deg, var(--shu-light) 0%, var(--shu) 100%);
+  color: #fff6ec;
+  font-family: var(--font-fude);
+  font-size: 0.62em;
+  line-height: 1;
+  transform: rotate(6deg);
+  box-shadow: 0 1px 3px rgba(120, 30, 10, 0.35);
+}
+
+/* ===== 盤のデザイン（きせかえ） =====
+   各テーマは CSS 変数で配色を決める。盤・駒・持ち駒台すべてここから色を取る */
+.ban-kaya {
+  --ban-frame1: #8a5a2e; --ban-frame2: #6b4220;
+  --ban-surface1: #ecc278; --ban-surface2: #e3b364;
+  --ban-line: rgba(112, 66, 22, 0.85);
+  --ban-star: rgba(95, 54, 16, 0.8);
+  --ban-grain: rgba(146, 92, 30, 0.05);
+  --cell-sel: rgba(255, 211, 77, 0.95);
+  --cell-last: rgba(255, 138, 56, 0.5);
+  --cell-target: rgba(178, 222, 96, 0.42);
+  --target-dot: rgba(101, 152, 38, 0.85);
+  --koma-bg1: #fdf2d9; --koma-bg2: #eed3a0; --koma-edge: rgba(120, 80, 30, 0.5);
+  --koma-fg: #241808; --koma-promoted: #c2271a;
+  --hand-bg: rgba(243, 227, 194, 0.85); --hand-border: #c99b5f;
+  --hand-label: #7a5224; --hand-empty: #a3782e;
+  --coord: #8a5b26;
+}
+.ban-sakura {
+  --ban-frame1: #b25a70; --ban-frame2: #93445a;
+  --ban-surface1: #f8dde4; --ban-surface2: #f3ccd6;
+  --ban-line: rgba(164, 84, 104, 0.8);
+  --ban-star: rgba(140, 62, 82, 0.8);
+  --ban-grain: rgba(190, 100, 130, 0.045);
+  --cell-sel: rgba(255, 188, 205, 1);
+  --cell-last: rgba(244, 114, 182, 0.42);
+  --cell-target: rgba(134, 220, 166, 0.5);
+  --target-dot: rgba(34, 154, 88, 0.85);
+  --koma-bg1: #fffafb; --koma-bg2: #f7e4e9; --koma-edge: rgba(160, 90, 110, 0.45);
+  --koma-fg: #46202e; --koma-promoted: #c2186b;
+  --hand-bg: rgba(250, 232, 237, 0.9); --hand-border: #dba6b2;
+  --hand-label: #99526a; --hand-empty: #bb7d92;
+  --coord: #a4536a;
+}
+.ban-wakaba {
+  --ban-frame1: #5d7a44; --ban-frame2: #45602f;
+  --ban-surface1: #dfe9c6; --ban-surface2: #d2e0b2;
+  --ban-line: rgba(86, 112, 52, 0.8);
+  --ban-star: rgba(68, 92, 38, 0.8);
+  --ban-grain: rgba(110, 140, 60, 0.05);
+  --cell-sel: rgba(255, 226, 120, 0.95);
+  --cell-last: rgba(250, 176, 64, 0.5);
+  --cell-target: rgba(125, 196, 255, 0.42);
+  --target-dot: rgba(37, 112, 197, 0.85);
+  --koma-bg1: #fafdf0; --koma-bg2: #e9f0d4; --koma-edge: rgba(95, 120, 55, 0.45);
+  --koma-fg: #1f2c12; --koma-promoted: #c2271a;
+  --hand-bg: rgba(234, 242, 217, 0.9); --hand-border: #a8bf84;
+  --hand-label: #55703b; --hand-empty: #7e9a58;
+  --coord: #55703b;
+}
+.ban-yozora {
+  --ban-frame1: #1c2140; --ban-frame2: #121530;
+  --ban-surface1: #2e3458; --ban-surface2: #272c4c;
+  --ban-line: rgba(146, 154, 205, 0.55);
+  --ban-star: rgba(201, 168, 106, 0.9);
+  --ban-grain: rgba(255, 255, 255, 0.02);
+  --cell-sel: rgba(201, 168, 106, 0.75);
+  --cell-last: rgba(129, 140, 255, 0.4);
+  --cell-target: rgba(125, 211, 252, 0.28);
+  --target-dot: rgba(125, 211, 252, 0.9);
+  --koma-bg1: #4b537f; --koma-bg2: #373e66; --koma-edge: rgba(20, 24, 50, 0.8);
+  --koma-fg: #f2e9cf; --koma-promoted: #ff9678;
+  --hand-bg: rgba(35, 40, 71, 0.92); --hand-border: #4a5180;
+  --hand-label: #aeb4dc; --hand-empty: #7d84b3;
+  --coord: #9ba2ce;
+}
+
+/* 駒のもじ（書体）切替 */
+.komaface-kaisho { --font-koma: var(--font-kaisho); --koma-weight: 700; }
+.komaface-fude { --font-koma: var(--font-fude); --koma-weight: 400; }
+.komaface-maru { --font-koma: var(--font-maru); --koma-weight: 900; }
+.komaface-dot { --font-koma: var(--font-dot); --koma-weight: 400; }
+
+/* ===== 五角形の駒 ===== */
+.koma {
+  position: relative;
+  width: 88%;
+  height: 92%;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 1.5px 1px rgba(20, 10, 0, 0.32));
+  font-size: clamp(15px, 4.9vw, 27px);
+  pointer-events: none;
+}
+.koma::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(50% 0%, 83% 13%, 97% 100%, 3% 100%, 17% 13%);
+  background:
+    linear-gradient(172deg, var(--koma-bg1) 0%, var(--koma-bg2) 82%, var(--koma-bg1) 100%);
+  box-shadow: inset 0 0 0 1.5px var(--koma-edge);
+}
+.koma-char {
+  position: relative;
+  padding-top: 14%;
+  font-family: var(--font-koma);
+  font-weight: var(--koma-weight, 700);
+  color: var(--koma-fg);
+  line-height: 1;
+}
+.koma-char.is-promoted { color: var(--koma-promoted); }
+/* ひらがな2文字などはたて書きで小さく */
+.koma-char.is-multi {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 0.5em;
+  letter-spacing: -0.08em;
+  padding-top: 10%;
+}
+/* 選んだ駒はすこし持ち上がる */
+.koma.is-lifted {
+  transform: translateY(-2px) scale(1.07);
+  filter: drop-shadow(0 4px 3px rgba(20, 10, 0, 0.35));
+}
+
+/* 持ち駒の駒（小さめ） */
+.koma-hand {
+  font-size: clamp(15px, 4.6vw, 24px);
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== アニメーション ===== */
+
+/* パネルがすっと上がってくる */
+@keyframes rise-in {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.rise-in {
+  animation: rise-in 0.35s ease-out both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.fade-in {
+  animation: fade-in 0.25s ease both;
+}
+
+/* 画面下からせり上がるシート */
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.sheet-up {
+  animation: sheet-up 0.28s cubic-bezier(0.32, 0.9, 0.35, 1) both;
+}
+
+/* ホーム画面の順番に出てくる演出 */
+.stagger > * {
+  animation: rise-in 0.4s ease-out both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0s; }
+.stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.stagger > *:nth-child(3) { animation-delay: 0.12s; }
+.stagger > *:nth-child(4) { animation-delay: 0.18s; }
+.stagger > *:nth-child(5) { animation-delay: 0.24s; }
+.stagger > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* 連続正確の炎をちょっと弾ませる */
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.bounce-soft {
+  animation: bounce-soft 0.8s ease-in-out infinite;
+}
+
+/* ===== 判定の開示演出 ===== */
+
+/* 形勢メーターの針がすっと動く */
+.meter-needle {
+  transition: left 0.7s cubic-bezier(0.25, 1, 0.4, 1);
+}
+
+/* 数字がポンと出る */
+@keyframes pop-num {
+  0% { transform: scale(0.3); opacity: 0; }
+  55% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.pop-num {
+  animation: pop-num 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ===== 形勢スライダー ===== */
+.keisei-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 14px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+}
+.keisei-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #fffdf6, #f3e7cd);
+  border: 3px solid var(--sumi);
+  box-shadow: 0 2px 6px rgba(40, 25, 5, 0.35);
+}
+.keisei-slider::-moz-range-thumb {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #fffdf6, #f3e7cd);
+  border: 3px solid var(--sumi);
+  box-shadow: 0 2px 6px rgba(40, 25, 5, 0.35);
 }
