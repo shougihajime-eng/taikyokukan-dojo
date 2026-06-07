@@ -41,3 +41,8 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# 作業用の一時ファイル
+migration-body.json
+scripts/out/
+.env.prod-check
