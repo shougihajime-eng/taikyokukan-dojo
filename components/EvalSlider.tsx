@@ -18,55 +18,57 @@ export default function EvalSlider({ mode, value, onChange, disabled }: Props) {
   const pct = winratePercent(value);
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-end justify-between text-xs font-semibold opacity-80">
-        <span>△後手よし</span>
-        <span className="text-base font-bold pop-num" key={mode === "winrate" ? pct : cp}>
+    <div className="flex flex-col gap-2.5">
+      {/* いまの予測値（大きく） */}
+      <div className="text-center">
+        <span className="font-mincho text-3xl tnum pop-num" key={mode === "winrate" ? pct : cp}>
           {mode === "winrate" ? (
-            <>先手勝率 {pct}%</>
+            <>
+              先手 <span className="text-[var(--shu)]">{pct}</span>
+              <span className="text-lg">%</span>
+            </>
           ) : (
-            <>評価値 {cp > 0 ? `+${cp}` : cp}</>
+            <span className="text-[var(--shu)]">
+              {cp > 0 ? `+${cp}` : cp}
+            </span>
           )}
         </span>
-        <span>▲先手よし</span>
       </div>
-      {mode === "winrate" ? (
-        <input
-          type="range"
-          min={1}
-          max={99}
-          step={1}
-          value={pct}
-          disabled={disabled}
-          onChange={(e) => onChange(Number(e.target.value) / 100)}
-          className="keisei-slider"
-          style={{
-            background:
-              "linear-gradient(90deg, #2e3458 0%, #8a86a8 35%, #e9e2cf 50%, #e0a08a 65%, #b32718 100%)",
-          }}
-          aria-label="先手の勝率を予測するスライダー"
-        />
-      ) : (
-        <input
-          type="range"
-          min={-CP_RANGE}
-          max={CP_RANGE}
-          step={25}
-          value={cp}
-          disabled={disabled}
-          onChange={(e) => onChange(cpToWinrate(Number(e.target.value)))}
-          className="keisei-slider"
-          style={{
-            background:
-              "linear-gradient(90deg, #2e3458 0%, #8a86a8 35%, #e9e2cf 50%, #e0a08a 65%, #b32718 100%)",
-          }}
-          aria-label="先手から見た評価値を予測するスライダー"
-        />
-      )}
-      <div className="flex justify-between text-[10px] opacity-60">
-        <span>{mode === "winrate" ? "0%" : `−${CP_RANGE}`}</span>
-        <span>互角</span>
-        <span>{mode === "winrate" ? "100%" : `+${CP_RANGE}`}</span>
+
+      <div className="relative px-1">
+        <div className="relative">
+          <span className="keisei-mid" aria-hidden />
+          {mode === "winrate" ? (
+            <input
+              type="range"
+              min={1}
+              max={99}
+              step={1}
+              value={pct}
+              disabled={disabled}
+              onChange={(e) => onChange(Number(e.target.value) / 100)}
+              className="keisei-slider keisei-track relative"
+              aria-label="先手の勝率を予測するスライダー"
+            />
+          ) : (
+            <input
+              type="range"
+              min={-CP_RANGE}
+              max={CP_RANGE}
+              step={25}
+              value={cp}
+              disabled={disabled}
+              onChange={(e) => onChange(cpToWinrate(Number(e.target.value)))}
+              className="keisei-slider keisei-track relative"
+              aria-label="先手から見た評価値を予測するスライダー"
+            />
+          )}
+        </div>
+        <div className="flex justify-between text-[11px] font-bold text-[var(--sumi-soft)] mt-1.5">
+          <span>△後手よし</span>
+          <span>互角</span>
+          <span>▲先手よし</span>
+        </div>
       </div>
     </div>
   );

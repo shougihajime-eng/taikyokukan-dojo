@@ -1,59 +1,379 @@
 @import "tailwindcss";
 
-/* ===== 書体（駒・題字用。layout.tsx で必要な文字だけ読み込み） ===== */
+/* =========================================================
+   大局観道場 — デザインシステム（和×将棋・高級道場）
+   方針: 和紙・墨・朱・金箔。明朝＋筆文字。奥行きのある陰影。
+        iPhone/iPad のセーフエリア対応。端末ごとに clamp で最適サイズ。
+   ⚠ 後半の「盤」「駒」「アニメ」は ShogiBoard.tsx が依存。クラス名・変数名は変更禁止。
+   ========================================================= */
+
 :root {
+  /* 書体 */
   --font-kaisho: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
   --font-fude: "Yuji Syuku", "Yu Mincho", serif;
   --font-maru: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  --font-gothic: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
   --font-dot: "DotGothic16", monospace;
   --font-koma: var(--font-kaisho);
 
-  /* 和の基調色（墨・朱・金） */
-  --sumi: #3b2f1e;
-  --shu: #b32718;
-  --shu-light: #d8442e;
-  --kin: #c9a86a;
+  /* 和の基調色 */
+  --sumi: #2c2218;        /* 墨（本文） */
+  --sumi-soft: #6b5b42;   /* うすい墨（副文） */
+  --shu: #b3271a;         /* 朱 */
+  --shu-deep: #8d1d12;
+  --shu-bright: #d8442e;
+  --kin: #b08a45;         /* 金 */
+  --kin-light: #d9bd7e;
+  --ai: #2e3458;          /* 藍（後手側） */
+  --paper: #fbf4e2;
+  --line: rgba(120, 86, 40, 0.18);
+  --line-strong: rgba(120, 86, 40, 0.32);
+
+  /* セーフエリア（iPhoneのノッチ・ホームバー） */
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+  --sar: env(safe-area-inset-right);
 }
 
 html {
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  /* 和紙のようなあたたかい背景（うっすら粒子＋光） */
-  background:
-    radial-gradient(900px 480px at 50% -8%, rgba(255, 252, 240, 0.9) 0%, rgba(255, 252, 240, 0) 60%),
-    repeating-linear-gradient(-42deg, rgba(176, 130, 60, 0.022) 0 2px, rgba(255, 255, 255, 0) 2px 6px),
-    linear-gradient(180deg, #fbf4e2 0%, #f4e7cb 100%);
+  /* 和紙: あたたかい紙地 ＋ うっすら粒子 ＋ 上部の光 ＋ 麻の葉風の極薄パターン */
+  background-color: #f6ecd3;
+  background-image:
+    radial-gradient(1100px 560px at 50% -10%, rgba(255, 252, 240, 0.95) 0%, rgba(255, 252, 240, 0) 58%),
+    repeating-linear-gradient(-42deg, rgba(176, 130, 60, 0.022) 0 2px, rgba(255, 255, 255, 0) 2px 7px),
+    radial-gradient(circle at 50% 50%, rgba(176, 138, 69, 0.05) 0.8px, transparent 1.2px),
+    linear-gradient(180deg, #fbf4e2 0%, #f2e4c5 100%);
+  background-size: auto, auto, 22px 22px, auto;
+  background-attachment: fixed;
   min-height: 100dvh;
   color: var(--sumi);
-  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  font-family: var(--font-gothic);
+  font-feature-settings: "palt" 1;
+  letter-spacing: 0.01em;
   overscroll-behavior-y: none;
 }
 
-/* 見出し・題字 */
+/* 見出し系 */
 .font-fude { font-family: var(--font-fude); }
 .font-maru { font-family: var(--font-maru); }
-.font-mincho { font-family: var(--font-kaisho); }
+.font-mincho { font-family: var(--font-kaisho); font-weight: 700; }
+.tnum { font-variant-numeric: tabular-nums; }
 
-/* 落款（らっかん）風の赤い印 */
+/* =========================================================
+   レイアウトの土台
+   ========================================================= */
+.app-main {
+  flex: 1 1 auto;
+  width: 100%;
+  padding-left: max(16px, var(--sal));
+  padding-right: max(16px, var(--sar));
+}
+.wrap {
+  width: 100%;
+  margin-inline: auto;
+}
+.wrap-readable { max-width: 34rem; }   /* 文章・フォーム中心の画面 */
+.wrap-wide { max-width: 60rem; }       /* けいこ・先生表 */
+.safe-bottom { padding-bottom: max(20px, var(--sab)); }
+
+/* 上部バー（けいこ・クセ・先生の各画面） */
+.appbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding-top: var(--sat);
+  background: linear-gradient(180deg, rgba(247, 238, 218, 0.94) 0%, rgba(247, 238, 218, 0.74) 100%);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  border-bottom: 1px solid var(--line);
+}
+.appbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 52px;
+  padding-inline: max(14px, var(--sal)) max(14px, var(--sar));
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+/* =========================================================
+   カード（和紙の札）
+   ========================================================= */
+.card {
+  position: relative;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.9) 0%, rgba(252, 244, 228, 0.8) 100%);
+  border: 1px solid var(--line);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 1px 2px rgba(70, 48, 18, 0.06),
+    0 18px 38px -22px rgba(70, 48, 18, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+/* 金箔の極細枠（特別なカード用） */
+.card-kin {
+  border-color: transparent;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.92), rgba(252, 244, 228, 0.84)) padding-box,
+    linear-gradient(150deg, var(--kin-light), var(--kin) 45%, #8a6a30 100%) border-box;
+  border: 1.5px solid transparent;
+}
+.card-pad { padding: clamp(16px, 4.5vw, 22px); }
+
+/* 小見出し（札の中の見出し） */
+.label-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--kin);
+  text-transform: none;
+}
+
+/* =========================================================
+   ボタン（押したくなる質感）
+   ========================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 54px;
+  padding: 0 18px;
+  border-radius: 15px;
+  font-weight: 700;
+  font-size: clamp(15px, 4vw, 17px);
+  line-height: 1.2;
+  transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.btn:active { transform: scale(0.975); }
+.btn:disabled { opacity: 0.55; cursor: default; transform: none; }
+
+.btn-shu {
+  color: #fff6ec;
+  background: linear-gradient(180deg, #db4a33 0%, #b3271a 60%, #9c2014 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -2px 6px rgba(110, 20, 10, 0.5),
+    0 10px 22px -10px rgba(150, 30, 15, 0.7);
+}
+.btn-shu:hover { filter: brightness(1.04); }
+
+.btn-sumi {
+  color: #f4e8ce;
+  background: linear-gradient(180deg, #46392a 0%, #2c2218 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 10px 22px -12px rgba(40, 26, 10, 0.7);
+}
+.btn-ghost {
+  color: var(--sumi);
+  background: rgba(255, 253, 247, 0.5);
+  border: 1.5px solid var(--line-strong);
+}
+.btn-ghost:hover { background: rgba(255, 253, 247, 0.8); }
+
+/* 落款（らっかん）風の朱印 */
 .hanko {
   display: inline-grid;
   place-items: center;
-  width: 1.45em;
-  height: 1.45em;
-  border-radius: 0.22em;
-  background: linear-gradient(160deg, var(--shu-light) 0%, var(--shu) 100%);
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 0.24em;
+  background: linear-gradient(160deg, var(--shu-bright) 0%, var(--shu-deep) 100%);
   color: #fff6ec;
   font-family: var(--font-fude);
-  font-size: 0.62em;
+  font-size: 0.6em;
   line-height: 1;
   transform: rotate(6deg);
-  box-shadow: 0 1px 3px rgba(120, 30, 10, 0.35);
+  box-shadow: 0 2px 5px rgba(120, 30, 10, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
 
-/* ===== 盤のデザイン（きせかえ） =====
-   各テーマは CSS 変数で配色を決める。盤・駒・持ち駒台すべてここから色を取る */
+/* 縦書きの題字（ヒーロー用） */
+.tate {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.1em;
+}
+
+/* チップ（手番・戦法・局面帯） */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--line-strong);
+  background: rgba(255, 253, 247, 0.6);
+  white-space: nowrap;
+}
+.chip-fill {
+  background: linear-gradient(180deg, #3b3024, #2c2218);
+  color: #f4e8ce;
+  border-color: transparent;
+}
+
+/* 区切りの罫（金の細線） */
+.rule-kin {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--kin) 18%, var(--kin) 82%, transparent);
+  opacity: 0.5;
+}
+
+/* =========================================================
+   形勢メーター・スライダー（このアプリの主役）
+   ========================================================= */
+.keisei-track {
+  background: linear-gradient(90deg,
+    #283056 0%, #545b86 28%, #c9bfa6 47%, #ead9c2 50%, #e6b49d 53%, #cf5a44 72%, #b3271a 100%);
+  box-shadow: inset 0 1px 3px rgba(40, 25, 10, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+/* 中央（互角）の目盛り線 */
+.keisei-mid {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: rgba(44, 34, 24, 0.45);
+  transform: translateX(-50%);
+}
+
+.keisei-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 16px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.keisei-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #fffefb 0%, #f6ead0 55%, #e7d2a6 100%);
+  border: 2.5px solid var(--sumi);
+  box-shadow: 0 3px 8px rgba(40, 25, 5, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+.keisei-slider::-moz-range-thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #fffefb 0%, #f6ead0 55%, #e7d2a6 100%);
+  border: 2.5px solid var(--sumi);
+  box-shadow: 0 3px 8px rgba(40, 25, 5, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+.keisei-slider:disabled::-webkit-slider-thumb { opacity: 0.5; }
+.keisei-slider:disabled::-moz-range-thumb { opacity: 0.5; }
+
+/* メーターの針 */
+.needle-you {
+  width: 0; height: 0;
+  border-inline: 7px solid transparent;
+  border-top: 11px solid var(--sumi);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+}
+.needle-ai {
+  width: 0; height: 0;
+  border-inline: 7px solid transparent;
+  border-bottom: 11px solid var(--shu);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+}
+
+/* =========================================================
+   バイアスのバー（クセ分析）
+   ========================================================= */
+.bias-track {
+  position: relative;
+  height: 22px;
+  border-radius: 9999px;
+  background: rgba(120, 86, 40, 0.12);
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(40, 25, 10, 0.12);
+}
+.bias-mid {
+  position: absolute;
+  left: 50%;
+  top: 0; bottom: 0;
+  width: 1.5px;
+  background: rgba(44, 34, 24, 0.35);
+  transform: translateX(-50%);
+}
+
+/* =========================================================
+   アニメーション
+   ========================================================= */
+@keyframes rise-in { from { transform: translateY(22px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.rise-in { animation: rise-in 0.4s cubic-bezier(0.22, 0.9, 0.3, 1) both; }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.fade-in { animation: fade-in 0.3s ease both; }
+
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.sheet-up { animation: sheet-up 0.32s cubic-bezier(0.32, 0.9, 0.35, 1) both; }
+
+@keyframes scrim-in { from { opacity: 0; } to { opacity: 1; } }
+.scrim-in { animation: scrim-in 0.25s ease both; }
+
+/* 順に出てくる */
+.stagger > * { animation: rise-in 0.45s cubic-bezier(0.22, 0.9, 0.3, 1) both; }
+.stagger > *:nth-child(1) { animation-delay: 0.02s; }
+.stagger > *:nth-child(2) { animation-delay: 0.09s; }
+.stagger > *:nth-child(3) { animation-delay: 0.16s; }
+.stagger > *:nth-child(4) { animation-delay: 0.23s; }
+.stagger > *:nth-child(5) { animation-delay: 0.3s; }
+.stagger > *:nth-child(6) { animation-delay: 0.37s; }
+
+@keyframes bounce-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.bounce-soft { animation: bounce-soft 0.85s ease-in-out infinite; }
+
+@keyframes pop-num { 0% { transform: scale(0.3); opacity: 0; } 55% { transform: scale(1.16); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+.pop-num { animation: pop-num 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+@keyframes sheen { 0% { background-position: -120% 0; } 100% { background-position: 220% 0; } }
+.gold-sheen {
+  background: linear-gradient(110deg, var(--kin) 0%, var(--kin-light) 40%, #fff3d6 50%, var(--kin-light) 60%, var(--kin) 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: sheen 5s linear infinite;
+}
+
+.meter-needle { transition: left 0.75s cubic-bezier(0.25, 1, 0.4, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger > *, .rise-in, .fade-in, .pop-num, .sheet-up, .scrim-in, .bounce-soft, .gold-sheen, .meter-needle {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* =========================================================
+   ▼▼▼ ここから下は ShogiBoard.tsx 専用（変更禁止） ▼▼▼
+   ========================================================= */
+
+/* 盤のデザイン（きせかえ） */
 .ban-kaya {
   --ban-frame1: #8a5a2e; --ban-frame2: #6b4220;
   --ban-surface1: #ecc278; --ban-surface2: #e3b364;
@@ -125,7 +445,7 @@ body {
 .komaface-maru { --font-koma: var(--font-maru); --koma-weight: 900; }
 .komaface-dot { --font-koma: var(--font-dot); --koma-weight: 400; }
 
-/* ===== 五角形の駒 ===== */
+/* 五角形の駒 */
 .koma {
   position: relative;
   width: 88%;
@@ -133,7 +453,7 @@ body {
   display: grid;
   place-items: center;
   filter: drop-shadow(0 1.5px 1px rgba(20, 10, 0, 0.32));
-  font-size: clamp(15px, 4.9vw, 27px);
+  font-size: clamp(15px, 4.9vw, 30px);
   pointer-events: none;
 }
 .koma::before {
@@ -141,8 +461,7 @@ body {
   position: absolute;
   inset: 0;
   clip-path: polygon(50% 0%, 83% 13%, 97% 100%, 3% 100%, 17% 13%);
-  background:
-    linear-gradient(172deg, var(--koma-bg1) 0%, var(--koma-bg2) 82%, var(--koma-bg1) 100%);
+  background: linear-gradient(172deg, var(--koma-bg1) 0%, var(--koma-bg2) 82%, var(--koma-bg1) 100%);
   box-shadow: inset 0 0 0 1.5px var(--koma-edge);
 }
 .koma-char {
@@ -154,7 +473,6 @@ body {
   line-height: 1;
 }
 .koma-char.is-promoted { color: var(--koma-promoted); }
-/* ひらがな2文字などはたて書きで小さく */
 .koma-char.is-multi {
   writing-mode: vertical-rl;
   text-orientation: upright;
@@ -162,109 +480,12 @@ body {
   letter-spacing: -0.08em;
   padding-top: 10%;
 }
-/* 選んだ駒はすこし持ち上がる */
 .koma.is-lifted {
   transform: translateY(-2px) scale(1.07);
   filter: drop-shadow(0 4px 3px rgba(20, 10, 0, 0.35));
 }
-
-/* 持ち駒の駒（小さめ） */
 .koma-hand {
-  font-size: clamp(15px, 4.6vw, 24px);
+  font-size: clamp(15px, 4.6vw, 26px);
   width: 100%;
   height: 100%;
-}
-
-/* ===== アニメーション ===== */
-
-/* パネルがすっと上がってくる */
-@keyframes rise-in {
-  from { transform: translateY(24px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-.rise-in {
-  animation: rise-in 0.35s ease-out both;
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-.fade-in {
-  animation: fade-in 0.25s ease both;
-}
-
-/* 画面下からせり上がるシート */
-@keyframes sheet-up {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-.sheet-up {
-  animation: sheet-up 0.28s cubic-bezier(0.32, 0.9, 0.35, 1) both;
-}
-
-/* ホーム画面の順番に出てくる演出 */
-.stagger > * {
-  animation: rise-in 0.4s ease-out both;
-}
-.stagger > *:nth-child(1) { animation-delay: 0s; }
-.stagger > *:nth-child(2) { animation-delay: 0.06s; }
-.stagger > *:nth-child(3) { animation-delay: 0.12s; }
-.stagger > *:nth-child(4) { animation-delay: 0.18s; }
-.stagger > *:nth-child(5) { animation-delay: 0.24s; }
-.stagger > *:nth-child(6) { animation-delay: 0.3s; }
-
-/* 連続正確の炎をちょっと弾ませる */
-@keyframes bounce-soft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-.bounce-soft {
-  animation: bounce-soft 0.8s ease-in-out infinite;
-}
-
-/* ===== 判定の開示演出 ===== */
-
-/* 形勢メーターの針がすっと動く */
-.meter-needle {
-  transition: left 0.7s cubic-bezier(0.25, 1, 0.4, 1);
-}
-
-/* 数字がポンと出る */
-@keyframes pop-num {
-  0% { transform: scale(0.3); opacity: 0; }
-  55% { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
-}
-.pop-num {
-  animation: pop-num 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-/* ===== 形勢スライダー ===== */
-.keisei-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 14px;
-  border-radius: 9999px;
-  outline: none;
-  cursor: pointer;
-}
-.keisei-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: linear-gradient(160deg, #fffdf6, #f3e7cd);
-  border: 3px solid var(--sumi);
-  box-shadow: 0 2px 6px rgba(40, 25, 5, 0.35);
-}
-.keisei-slider::-moz-range-thumb {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: linear-gradient(160deg, #fffdf6, #f3e7cd);
-  border: 3px solid var(--sumi);
-  box-shadow: 0 2px 6px rgba(40, 25, 5, 0.35);
 }

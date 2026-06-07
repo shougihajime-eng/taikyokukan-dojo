@@ -8,6 +8,7 @@ import ShogiBoard from "@/components/ShogiBoard";
 import EvalSlider, { type SliderMode } from "@/components/EvalSlider";
 import ResultReveal from "@/components/ResultReveal";
 import SampleBanner from "@/components/SampleBanner";
+import AppHeader from "@/components/AppHeader";
 import { buildExplanation, type Explanation } from "@/lib/explain";
 import { weightedScore, meanAbsError, bestStreak, signedBias, biasLabel, STREAK_THRESH } from "@/lib/scoring";
 import { loadStudent, type Student } from "@/lib/student";
@@ -140,6 +141,10 @@ export default function PlayPage() {
       setGuess(0.5);
       setReveal(null);
       setErrMsg("");
+      if (typeof window !== "undefined") {
+        const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+      }
       return;
     }
     // 終了: ログイン済みならサーバーで集計確定（表示は手元の results からでも出せる）
@@ -160,92 +165,61 @@ export default function PlayPage() {
   // ===== せってい画面 =====
   if (stage === "setup" || stage === "loading" || stage === "error") {
     return (
-      <main className="flex-1 w-full max-w-130 mx-auto px-4 py-8">
-        <div className="stagger flex flex-col gap-5">
-          <header className="text-center">
-            <h1 className="font-fude text-4xl">けいこの準備</h1>
-            {!student && (
-              <p className="mt-2 text-xs rounded-lg bg-white/60 border border-amber-900/20 px-3 py-2">
-                いまは<b>おためしモード</b>（きろくは残りません）。きろくを残すには
-                <Link href="/" className="underline font-bold mx-1">ホーム</Link>でログインしてね
-              </p>
-            )}
-          </header>
+      <main className="flex flex-col flex-1">
+        <AppHeader back="/" backLabel="ホーム" />
+        <div className="app-main safe-bottom pt-5">
+          <div className="wrap wrap-readable stagger flex flex-col gap-5">
+            <header className="text-center">
+              <h1 className="font-mincho text-3xl">けいこの準備</h1>
+              {!student && (
+                <p className="mt-2 text-xs text-[var(--sumi-soft)] inline-block rounded-full bg-white/60 border border-[var(--line)] px-3 py-1.5">
+                  いまは<b>おためし</b>（きろくは残りません）・
+                  <Link href="/" className="underline font-bold">ホームでログイン</Link>すると保存されます
+                </p>
+              )}
+            </header>
 
-          <section className="rounded-2xl border border-amber-900/20 bg-white/55 p-5 flex flex-col gap-4">
-            <div>
-              <p className="font-bold text-sm mb-1.5">よそくの仕方</p>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setMode("winrate")}
-                  className={`rounded-xl border-2 py-2.5 text-sm font-bold transition ${mode === "winrate" ? "border-[#b32718] bg-[#b32718]/10" : "border-[#3b2f1e]/25"}`}
-                >
-                  勝率で予測
-                  <span className="block text-[10px] font-normal opacity-70">0〜100%（おすすめ）</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMode("cp")}
-                  className={`rounded-xl border-2 py-2.5 text-sm font-bold transition ${mode === "cp" ? "border-[#b32718] bg-[#b32718]/10" : "border-[#3b2f1e]/25"}`}
-                >
-                  評価値で予測
-                  <span className="block text-[10px] font-normal opacity-70">±2000（上級）</span>
-                </button>
-              </div>
-            </div>
+            <section className="card card-pad flex flex-col gap-5">
+              <Choice
+                label="よそくの仕方"
+                value={mode}
+                onChange={(v) => setMode(v as SliderMode)}
+                options={[
+                  { v: "winrate", label: "勝率で予測", sub: "0〜100%（おすすめ）" },
+                  { v: "cp", label: "評価値で予測", sub: "±2000（上級）" },
+                ]}
+                cols={2}
+              />
+              <Choice
+                label="出題する戦法"
+                value={styleFilter}
+                onChange={(v) => setStyleFilter(v as "all" | "ibisha" | "furibisha")}
+                options={[
+                  { v: "all", label: "すべて" },
+                  { v: "ibisha", label: "居飛車" },
+                  { v: "furibisha", label: "振り飛車" },
+                ]}
+                cols={3}
+              />
+              <Choice
+                label="問題数"
+                value={String(count)}
+                onChange={(v) => setCount(Number(v))}
+                options={[
+                  { v: "10", label: "10問" },
+                  { v: "15", label: "15問" },
+                  { v: "20", label: "20問" },
+                ]}
+                cols={3}
+              />
 
-            <div>
-              <p className="font-bold text-sm mb-1.5">出題する戦法</p>
-              <div className="grid grid-cols-3 gap-2">
-                {([
-                  ["all", "すべて"],
-                  ["ibisha", "居飛車"],
-                  ["furibisha", "振り飛車"],
-                ] as const).map(([v, label]) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setStyleFilter(v)}
-                    className={`rounded-xl border-2 py-2.5 text-sm font-bold transition ${styleFilter === v ? "border-[#b32718] bg-[#b32718]/10" : "border-[#3b2f1e]/25"}`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
+              {stage === "error" && <p className="text-sm text-[var(--shu)]">{errMsg}</p>}
 
-            <div>
-              <p className="font-bold text-sm mb-1.5">問題数</p>
-              <div className="grid grid-cols-3 gap-2">
-                {[10, 15, 20].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => setCount(n)}
-                    className={`rounded-xl border-2 py-2.5 text-sm font-bold transition ${count === n ? "border-[#b32718] bg-[#b32718]/10" : "border-[#3b2f1e]/25"}`}
-                  >
-                    {n}問
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {stage === "error" && <p className="text-sm text-[#b32718]">{errMsg}</p>}
-
-            <button
-              type="button"
-              onClick={start}
-              disabled={stage === "loading"}
-              className="rounded-xl bg-gradient-to-b from-[#d8442e] to-[#b32718] text-[#fff6ec] font-bold text-lg py-3.5 shadow-md active:scale-[0.98] transition disabled:opacity-60"
-            >
-              {stage === "loading" ? "じゅんび中…" : "▶ けいこ開始"}
-            </button>
-          </section>
-
-          <footer className="text-center text-xs opacity-70">
-            <Link href="/" className="underline underline-offset-2">← ホームへ</Link>
-          </footer>
+              <button type="button" onClick={start} disabled={stage === "loading"} className="btn btn-shu text-lg">
+                {stage === "loading" ? "じゅんび中…" : "▶ けいこ開始"}
+              </button>
+            </section>
+          </div>
         </div>
       </main>
     );
@@ -257,49 +231,43 @@ export default function PlayPage() {
     const meanErr = Math.round(meanAbsError(results.map((r) => r.absError)) * 100);
     const bias = signedBias(results.map((r) => r.signedError));
     const stk = bestStreak(results.map((r) => r.absError));
+    const grade = score >= 85 ? "免許皆伝" : score >= 70 ? "高段者" : score >= 55 ? "有段者" : score >= 40 ? "級位者" : "修行中";
     return (
-      <main className="flex-1 w-full max-w-130 mx-auto px-4 py-8">
-        <div className="stagger flex flex-col gap-5">
-          <header className="text-center">
-            <h1 className="font-fude text-4xl">けいこ終了</h1>
-            {!student && <p className="mt-1 text-xs opacity-70">（おためしモードのため、きろくは残っていません）</p>}
-          </header>
+      <main className="flex flex-col flex-1">
+        <AppHeader back="/" backLabel="ホーム" />
+        <div className="app-main safe-bottom pt-5">
+          <div className="wrap wrap-readable stagger flex flex-col gap-5">
+            <header className="text-center">
+              <h1 className="font-mincho text-3xl">けいこ終了</h1>
+              {!student && <p className="mt-1 text-xs text-[var(--sumi-soft)]">（おためしのため、きろくは残っていません）</p>}
+            </header>
 
-          <section className="rounded-2xl border border-amber-900/20 bg-white/60 p-5 text-center">
-            <p className="text-sm opacity-75">大局観の精度ポイント</p>
-            <p className="font-fude text-7xl leading-none my-2 text-[#b32718] pop-num">{score}</p>
-            <p className="text-xs opacity-60">（100にちかいほど正確・互角の局面ほど重く採点）</p>
-          </section>
+            {/* 精度ポイント（主役） */}
+            <section className="card card-kin card-pad text-center relative overflow-hidden">
+              <p className="label-eyebrow">大局観の精度ポイント</p>
+              <p className="font-mincho text-[clamp(4.5rem,26vw,7rem)] leading-none my-1 text-[var(--shu)] pop-num tnum">
+                {score}
+              </p>
+              <p className="inline-block font-fude text-lg px-4 py-0.5 rounded-full bg-[var(--shu)]/10 text-[var(--shu-deep)]">
+                {grade}
+              </p>
+              <p className="text-xs text-[var(--sumi-soft)] mt-2">100にちかいほど正確・互角の局面ほど重く採点します</p>
+            </section>
 
-          <section className="rounded-2xl border border-amber-900/20 bg-white/60 p-5 grid grid-cols-3 gap-3 text-center">
-            <div>
-              <p className="text-xs opacity-70">平均のズレ</p>
-              <p className="text-2xl font-bold">{meanErr}<span className="text-sm">pt</span></p>
-            </div>
-            <div>
-              <p className="text-xs opacity-70">最高れんぞく</p>
-              <p className="text-2xl font-bold">{stk}<span className="text-sm">回</span></p>
-            </div>
-            <div>
-              <p className="text-xs opacity-70">今回のクセ</p>
-              <p className="text-sm font-bold mt-1.5">{biasLabel(bias)}</p>
-            </div>
-          </section>
+            <section className="card card-pad grid grid-cols-3 gap-2 text-center divide-x divide-[var(--line)]">
+              <Stat label="平均のズレ" value={`${meanErr}`} unit="pt" />
+              <Stat label="最高れんぞく" value={`${stk}`} unit="回" />
+              <Stat label="今回のクセ" text={biasLabel(bias)} />
+            </section>
 
-          <div className="flex flex-col gap-2.5">
-            <button
-              type="button"
-              onClick={() => setStage("setup")}
-              className="rounded-xl bg-gradient-to-b from-[#d8442e] to-[#b32718] text-[#fff6ec] font-bold py-3 shadow-md active:scale-[0.98] transition"
-            >
-              🔁 もういちど けいこする
-            </button>
-            <Link href="/dashboard" className="text-center rounded-xl border-2 border-[#3b2f1e]/70 font-bold py-3 active:scale-[0.98] transition">
-              📈 じぶんのクセを見る
-            </Link>
-            <Link href="/" className="text-center text-sm underline underline-offset-2 opacity-75 py-1">
-              ← ホームへ
-            </Link>
+            <div className="flex flex-col gap-2.5">
+              <button type="button" onClick={() => setStage("setup")} className="btn btn-shu">
+                🔁 もういちど けいこする
+              </button>
+              <Link href="/dashboard" className="btn btn-ghost">
+                📈 じぶんのクセを見る
+              </Link>
+            </div>
           </div>
         </div>
       </main>
@@ -313,65 +281,126 @@ export default function PlayPage() {
   const turnLabel = state.turn === "sente" ? "▲先手の番" : "△後手の番";
 
   return (
-    <main className="flex-1 w-full max-w-130 mx-auto px-3 py-4">
-      <div className="flex flex-col gap-3">
-        {/* 進行ヘッダー */}
-        <div className="flex items-center justify-between text-sm">
-          <Link href="/" className="opacity-70 underline underline-offset-2 text-xs">← やめる</Link>
-          <span className="font-bold">
-            第{idx + 1}問 <span className="opacity-60 font-normal">／ 全{positions.length}問</span>
-          </span>
-          <span className={`text-xs font-bold ${streak >= 2 ? "bounce-soft text-[#b32718]" : "opacity-60"}`}>
-            🔥{streak}連続
-          </span>
-        </div>
-
-        {current.isSample && <SampleBanner />}
-
-        {/* 局面の情報（評価値は隠す） */}
-        <div className="flex items-center justify-center gap-2 text-xs">
-          <span className="rounded-full bg-[#3b2f1e] text-[#fff6ec] px-2.5 py-1 font-bold">{turnLabel}</span>
-          <span className="rounded-full border border-[#3b2f1e]/30 px-2.5 py-1">{STYLE_LABEL[current.styleTag] ?? "—"}</span>
-          <span className="rounded-full border border-[#3b2f1e]/30 px-2.5 py-1">{PHASE_LABEL[current.phaseTag] ?? "—"}</span>
-        </div>
-
-        <ShogiBoard state={state} />
-
-        {!reveal ? (
-          <div className="rounded-2xl border border-amber-900/20 bg-white/60 p-4 flex flex-col gap-3">
-            <p className="text-center text-sm font-bold">
-              この局面、<span className="text-[#b32718]">先手から見て</span>どれくらい？
-            </p>
-            <EvalSlider mode={mode} value={guess} onChange={setGuess} disabled={judging} />
-            {errMsg && <p className="text-sm text-[#b32718] text-center">{errMsg}</p>}
-            <button
-              type="button"
-              onClick={judge}
-              disabled={judging}
-              className="rounded-xl bg-gradient-to-b from-[#d8442e] to-[#b32718] text-[#fff6ec] font-bold text-lg py-3 shadow-md active:scale-[0.98] transition disabled:opacity-60"
-            >
-              {judging ? "判定中…" : "⚖ 判定する"}
-            </button>
+    <main className="flex flex-col flex-1">
+      <AppHeader back="/" backLabel="やめる" />
+      <div className="app-main safe-bottom pt-3">
+        <div className="wrap wrap-wide flex flex-col gap-3">
+          {/* 進行 */}
+          <div className="flex items-center justify-between">
+            <span className="font-mincho text-lg">
+              第{idx + 1}問<span className="text-sm text-[var(--sumi-soft)] font-sans"> ／ 全{positions.length}問</span>
+            </span>
+            <span className={`chip ${streak >= 2 ? "bounce-soft !border-[var(--shu)] text-[var(--shu)]" : ""}`}>
+              🔥 {streak}連続
+            </span>
           </div>
-        ) : (
-          <>
-            <ResultReveal
-              guessWinrate={guess}
-              actualWinrate={reveal.actualWinrate}
-              absError={reveal.absError}
-              explanation={reveal.explanation}
-              phaseTag={current.phaseTag}
+          {/* 進行バー */}
+          <div className="h-1.5 rounded-full bg-[var(--line)] overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[var(--kin-light)] to-[var(--shu)] transition-all duration-500"
+              style={{ width: `${((idx + (reveal ? 1 : 0)) / positions.length) * 100}%` }}
             />
-            <button
-              type="button"
-              onClick={next}
-              className="rounded-xl bg-[#3b2f1e] text-[#fff6ec] font-bold text-lg py-3 shadow-md active:scale-[0.98] transition"
-            >
-              {idx + 1 < positions.length ? `次の局面へ（第${idx + 2}問）→` : "結果を見る →"}
-            </button>
-          </>
-        )}
+          </div>
+
+          {current.isSample && <SampleBanner />}
+
+          {/* iPad横は2段組（盤｜操作）、スマホは縦積み */}
+          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-6 lg:items-start flex flex-col gap-3">
+            {/* 盤と局面情報 */}
+            <div className="flex flex-col gap-2.5">
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                <span className="chip chip-fill">{turnLabel}</span>
+                <span className="chip">{STYLE_LABEL[current.styleTag] ?? "—"}</span>
+                <span className="chip">{PHASE_LABEL[current.phaseTag] ?? "—"}</span>
+              </div>
+              <div className="w-full max-w-[32rem] mx-auto">
+                <ShogiBoard state={state} />
+              </div>
+            </div>
+
+            {/* 操作（予測 → 判定 → 開示） */}
+            <div className="lg:sticky lg:top-[68px] flex flex-col gap-3">
+              {!reveal ? (
+                <div className="card card-pad flex flex-col gap-4">
+                  <p className="text-center font-mincho text-lg">
+                    <span className="text-[var(--shu)]">先手から見て</span>どれくらい？
+                  </p>
+                  <EvalSlider mode={mode} value={guess} onChange={setGuess} disabled={judging} />
+                  {errMsg && <p className="text-sm text-[var(--shu)] text-center">{errMsg}</p>}
+                  <button type="button" onClick={judge} disabled={judging} className="btn btn-shu text-lg">
+                    {judging ? "判定中…" : "⚖ 判定する"}
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <ResultReveal
+                    guessWinrate={guess}
+                    actualWinrate={reveal.actualWinrate}
+                    absError={reveal.absError}
+                    explanation={reveal.explanation}
+                    phaseTag={current.phaseTag}
+                  />
+                  <button type="button" onClick={next} className="btn btn-sumi text-lg">
+                    {idx + 1 < positions.length ? `次の局面へ（第${idx + 2}問）→` : "結果を見る →"}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </main>
+  );
+}
+
+/* ===== 小さな部品 ===== */
+function Choice({
+  label,
+  value,
+  onChange,
+  options,
+  cols,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { v: string; label: string; sub?: string }[];
+  cols: 2 | 3;
+}) {
+  return (
+    <div>
+      <p className="label-eyebrow mb-2">{label}</p>
+      <div className={`grid gap-2 ${cols === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
+        {options.map((o) => (
+          <button
+            key={o.v}
+            type="button"
+            onClick={() => onChange(o.v)}
+            className={`rounded-xl border-2 py-2.5 px-1 text-sm font-bold transition ${
+              value === o.v ? "border-[var(--shu)] bg-[var(--shu)]/8" : "border-[var(--line-strong)]"
+            }`}
+          >
+            {o.label}
+            {o.sub && <span className="block text-[10px] font-normal text-[var(--sumi-soft)]">{o.sub}</span>}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Stat({ label, value, unit, text }: { label: string; value?: string; unit?: string; text?: string }) {
+  return (
+    <div className="px-1">
+      <p className="text-[11px] text-[var(--sumi-soft)]">{label}</p>
+      {text ? (
+        <p className="text-sm font-bold mt-2 leading-tight">{text}</p>
+      ) : (
+        <p className="text-2xl font-bold tnum mt-1">
+          {value}
+          {unit && <span className="text-sm font-normal"> {unit}</span>}
+        </p>
+      )}
+    </div>
   );
 }

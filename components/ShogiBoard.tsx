@@ -141,7 +141,7 @@ function ShogiBoardInner({ state, selected, targets = [], lastTo, interactive = 
   const isSelected = (r: number, c: number) => !!selected && "r" in selected && selected.r === r && selected.c === c;
 
   return (
-    <div className={`w-full max-w-115 mx-auto flex flex-col gap-1.5 select-none ban-${settings.ban} ${FACE_CLASS[komaStyle]}`}>
+    <div className={`w-full mx-auto flex flex-col gap-1.5 select-none ban-${settings.ban} ${FACE_CLASS[komaStyle]}`}>
       <HandRow
         color="gote" state={state} selected={selected} interactive={interactive} onHandTap={onHandTap}
         style={komaStyle} meLabel={T.me} oppLabel={T.opp} noHandLabel={T.noHand} tappable={handTapColor === "gote"}

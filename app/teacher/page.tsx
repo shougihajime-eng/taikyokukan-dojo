@@ -1,7 +1,7 @@
 "use client";
 // 先生用ページ: 合言葉を入れると全生徒のけいこ状況が見える。
 import { useState } from "react";
-import Link from "next/link";
+import AppHeader from "@/components/AppHeader";
 
 interface StudentRow {
   id: string;
@@ -48,81 +48,77 @@ export default function TeacherPage() {
   }
 
   return (
-    <main className="flex-1 w-full max-w-150 mx-auto px-4 py-8">
-      <div className="flex flex-col gap-5">
-        <header className="text-center">
-          <h1 className="font-fude text-4xl">先生用</h1>
-          <p className="mt-1 text-xs opacity-70">生徒のけいこ状況と判断のクセ</p>
-        </header>
+    <main className="flex flex-col flex-1">
+      <AppHeader back="/" backLabel="ホーム" showDressup={false} />
+      <div className="app-main safe-bottom pt-5">
+        <div className="wrap wrap-wide flex flex-col gap-5">
+          <header className="text-center">
+            <h1 className="font-mincho text-3xl">先生用</h1>
+            <p className="mt-1 text-xs text-[var(--sumi-soft)]">生徒のけいこ状況と判断のクセ</p>
+          </header>
 
-        {!students ? (
-          <section className="rounded-2xl border border-amber-900/20 bg-white/60 p-5 flex flex-col gap-3 max-w-100 w-full mx-auto">
-            <input
-              value={pass}
-              onChange={(e) => setPass(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && load()}
-              placeholder="先生の合言葉"
-              type="password"
-              className="rounded-lg border border-[#3b2f1e]/30 bg-white/80 px-3 py-2.5"
-            />
-            {msg && <p className="text-sm text-[#b32718]">{msg}</p>}
-            <button
-              type="button"
-              onClick={load}
-              disabled={busy}
-              className="rounded-xl bg-[#3b2f1e] text-[#fff6ec] font-bold py-3 active:scale-[0.98] transition disabled:opacity-50"
-            >
-              {busy ? "確認中…" : "開く"}
-            </button>
-          </section>
-        ) : students.length === 0 ? (
-          <p className="text-center text-sm opacity-70 py-8">まだ生徒の登録がありません</p>
-        ) : (
-          <section className="rounded-2xl border border-amber-900/20 bg-white/70 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-[#3b2f1e] text-[#fff6ec] text-xs">
-                  <th className="px-3 py-2.5 text-left">なまえ</th>
-                  <th className="px-2 py-2.5 text-right">けいこ</th>
-                  <th className="px-2 py-2.5 text-right">問題数</th>
-                  <th className="px-2 py-2.5 text-right">平均精度</th>
-                  <th className="px-2 py-2.5 text-left">クセ</th>
-                  <th className="px-3 py-2.5 text-right">最終けいこ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {students.map((s, i) => (
-                  <tr key={s.id} className={i % 2 === 1 ? "bg-[#fbf4e2]/70" : ""}>
-                    <td className="px-3 py-2.5 font-bold">{s.name}</td>
-                    <td className="px-2 py-2.5 text-right">{s.sessions}回</td>
-                    <td className="px-2 py-2.5 text-right">{s.guesses}問</td>
-                    <td className="px-2 py-2.5 text-right font-bold">
-                      {s.avgScore === null ? "—" : `${s.avgScore}点`}
-                    </td>
-                    <td className="px-2 py-2.5 text-xs">
-                      {s.biasLabel ?? "—"}
-                      {s.bias !== null && (
-                        <span className="opacity-60 ml-1">
-                          ({Math.round(s.bias * 100) > 0 ? "+" : ""}
-                          {Math.round(s.bias * 100)}pt)
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2.5 text-right text-xs opacity-75">
-                      {s.lastAt
-                        ? new Date(s.lastAt).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" })
-                        : "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        )}
-
-        <footer className="text-center text-xs opacity-70">
-          <Link href="/" className="underline underline-offset-2">← ホームへ</Link>
-        </footer>
+          {!students ? (
+            <section className="card card-pad flex flex-col gap-3 max-w-[26rem] w-full mx-auto">
+              <input
+                value={pass}
+                onChange={(e) => setPass(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && load()}
+                placeholder="先生の合言葉"
+                type="password"
+                className="rounded-xl border border-[var(--line-strong)] bg-white/80 px-3.5 py-3 text-base outline-none focus:border-[var(--shu)] transition"
+              />
+              {msg && <p className="text-sm text-[var(--shu)]">{msg}</p>}
+              <button type="button" onClick={load} disabled={busy} className="btn btn-sumi">
+                {busy ? "確認中…" : "開く"}
+              </button>
+            </section>
+          ) : students.length === 0 ? (
+            <p className="text-center text-sm text-[var(--sumi-soft)] py-8">まだ生徒の登録がありません</p>
+          ) : (
+            <section className="card overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-[var(--sumi)] text-[#f4e8ce] text-xs">
+                      <th className="px-3 py-3 text-left font-bold">なまえ</th>
+                      <th className="px-2 py-3 text-right font-bold">けいこ</th>
+                      <th className="px-2 py-3 text-right font-bold">問題数</th>
+                      <th className="px-2 py-3 text-right font-bold">平均精度</th>
+                      <th className="px-2 py-3 text-left font-bold">クセ</th>
+                      <th className="px-3 py-3 text-right font-bold whitespace-nowrap">最終けいこ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {students.map((s, i) => (
+                      <tr key={s.id} className={i % 2 === 1 ? "bg-[var(--paper)]/60" : ""}>
+                        <td className="px-3 py-3 font-bold whitespace-nowrap">{s.name}</td>
+                        <td className="px-2 py-3 text-right tnum">{s.sessions}回</td>
+                        <td className="px-2 py-3 text-right tnum">{s.guesses}問</td>
+                        <td className="px-2 py-3 text-right font-bold tnum">
+                          {s.avgScore === null ? "—" : `${s.avgScore}点`}
+                        </td>
+                        <td className="px-2 py-3 text-xs whitespace-nowrap">
+                          {s.biasLabel ?? "—"}
+                          {s.bias !== null && (
+                            <span className="text-[var(--sumi-soft)] ml-1 tnum">
+                              ({Math.round(s.bias * 100) > 0 ? "+" : ""}
+                              {Math.round(s.bias * 100)})
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 text-right text-xs text-[var(--sumi-soft)] whitespace-nowrap">
+                          {s.lastAt
+                            ? new Date(s.lastAt).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" })
+                            : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+        </div>
       </div>
     </main>
   );
