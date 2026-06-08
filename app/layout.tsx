@@ -5,10 +5,22 @@ export const metadata: Metadata = {
   title: "大局観道場｜形勢判断トレーニング",
   description:
     "局面の形勢をスライダーで予測して、エンジンの評価とのズレを採点。自分の判断のクセを見つけて大局観を鍛える将棋トレーニングアプリ。",
+  applicationName: "大局観道場",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "大局観道場",
+    title: "大局観",
+  },
+  openGraph: {
+    title: "大局観道場｜形勢判断トレーニング",
+    description:
+      "局面の形勢をスライダーで予測して、エンジンの評価とのズレを採点。自分の判断のクセを見つけて大局観を鍛える将棋トレーニングアプリ。",
+    type: "website",
+    locale: "ja_JP",
   },
 };
 

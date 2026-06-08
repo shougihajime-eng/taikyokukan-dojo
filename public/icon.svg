@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.18" y2="1">
+      <stop offset="0" stop-color="#e7c98a"/>
+      <stop offset="0.5" stop-color="#c9a24b"/>
+      <stop offset="1" stop-color="#a07c34"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.1" r="0.95">
+      <stop offset="0" stop-color="#fff7e6" stop-opacity="0.6"/>
+      <stop offset="0.6" stop-color="#fff7e6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rose" cx="0.85" cy="0.9" r="0.7">
+      <stop offset="0" stop-color="#e7b6b0" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#e7b6b0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="koma" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fdf3da"/>
+      <stop offset="0.82" stop-color="#eed3a0"/>
+      <stop offset="1" stop-color="#f7e6c4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景（金箔の地） -->
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#rose)"/>
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#glow)"/>
+
+  <!-- 五角形の駒 -->
+  <path d="M256 92 L356 138 L398 432 L114 432 L156 138 Z"
+        fill="url(#koma)" stroke="#9a6a2b" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- 「局」の文字 -->
+  <text x="256" y="318" text-anchor="middle"
+        font-family="'Yu Mincho','Hiragino Mincho ProN','Noto Serif JP',serif"
+        font-weight="700" font-size="206" fill="#2c2218">局</text>
+</svg>
