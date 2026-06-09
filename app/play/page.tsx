@@ -9,9 +9,11 @@ import EvalSlider, { type SliderMode } from "@/components/EvalSlider";
 import ResultReveal from "@/components/ResultReveal";
 import SampleBanner from "@/components/SampleBanner";
 import AppHeader from "@/components/AppHeader";
+import Sparkles from "@/components/Sparkles";
 import { buildExplanation, type Explanation } from "@/lib/explain";
 import { weightedScore, meanAbsError, bestStreak, signedBias, biasLabel, STREAK_THRESH } from "@/lib/scoring";
 import { loadStudent, type Student } from "@/lib/student";
+import { useCountUp } from "@/lib/useCountUp";
 
 interface PositionItem {
   id: string;
@@ -53,10 +55,27 @@ export default function PlayPage() {
   const [reveal, setReveal] = useState<RevealData | null>(null);
   const [results, setResults] = useState<RevealData[]>([]);
   const [streak, setStreak] = useState(0);
+  const [burst, setBurst] = useState(false);
 
   useEffect(() => {
     setStudent(loadStudent());
   }, []);
+
+  // 判定したしゅんかんに盤を光らせる＋スマホはそっと振動
+  useEffect(() => {
+    if (!reveal) return;
+    setBurst(true);
+    try {
+      const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      if (!reduce && typeof navigator !== "undefined" && "vibrate" in navigator) {
+        navigator.vibrate(reveal.absError <= 0.03 ? [14, 44, 20] : 10);
+      }
+    } catch {
+      /* 振動できない端末は無視 */
+    }
+    const t = setTimeout(() => setBurst(false), 760);
+    return () => clearTimeout(t);
+  }, [reveal]);
 
   const current = positions[idx] ?? null;
   const state = useMemo(() => (current ? ShogiCore.parseSfen(current.sfen) : null), [current]);
@@ -123,6 +142,7 @@ export default function PlayPage() {
           signedError: data.signedError,
           bestMoveUsi: data.bestMoveUsi,
           pv: data.pv ?? [],
+          phase: current.phaseTag,
         }),
       };
       setReveal(r);
@@ -167,14 +187,15 @@ export default function PlayPage() {
     return (
       <main className="flex flex-col flex-1">
         <AppHeader back="/" backLabel="ホーム" />
-        <div className="app-main safe-bottom pt-5">
+        <div className="app-main safe-bottom pt-6">
           <div className="wrap wrap-readable stagger flex flex-col gap-5">
             <header className="text-center">
-              <h1 className="font-mincho text-3xl">けいこの準備</h1>
+              <p className="label-eyebrow">けいこの準備</p>
+              <h1 className="font-mincho text-3xl mt-1">どんな けいこ にする？</h1>
               {!student && (
-                <p className="mt-2 text-xs text-[var(--sumi-soft)] inline-block rounded-full bg-white/60 border border-[var(--line)] px-3 py-1.5">
-                  いまは<b>おためし</b>（きろくは残りません）・
-                  <Link href="/" className="underline font-bold">ホームでログイン</Link>すると保存されます
+                <p className="mt-3 text-xs text-[var(--sumi-soft)] inline-block rounded-full bg-white/5 border border-[var(--line)] px-3 py-1.5">
+                  いまは<b className="text-[var(--kin)]">おためし</b>（きろくは残りません）・
+                  <Link href="/" className="underline font-bold text-[var(--kin-light)]">ホームでログイン</Link>すると保存されます
                 </p>
               )}
             </header>
@@ -213,7 +234,7 @@ export default function PlayPage() {
                 cols={3}
               />
 
-              {stage === "error" && <p className="text-sm text-[var(--shu)]">{errMsg}</p>}
+              {stage === "error" && <p className="text-sm text-[var(--shu-bright)]">{errMsg}</p>}
 
               <button type="button" onClick={start} disabled={stage === "loading"} className="btn btn-shu text-lg">
                 {stage === "loading" ? "じゅんび中…" : "▶ けいこ開始"}
@@ -231,28 +252,18 @@ export default function PlayPage() {
     const meanErr = Math.round(meanAbsError(results.map((r) => r.absError)) * 100);
     const bias = signedBias(results.map((r) => r.signedError));
     const stk = bestStreak(results.map((r) => r.absError));
-    const grade = score >= 85 ? "免許皆伝" : score >= 70 ? "高段者" : score >= 55 ? "有段者" : score >= 40 ? "級位者" : "修行中";
     return (
       <main className="flex flex-col flex-1">
         <AppHeader back="/" backLabel="ホーム" />
-        <div className="app-main safe-bottom pt-5">
+        <div className="app-main safe-bottom pt-6">
           <div className="wrap wrap-readable stagger flex flex-col gap-5">
             <header className="text-center">
-              <h1 className="font-mincho text-3xl">けいこ終了</h1>
+              <p className="label-eyebrow">けいこ終了</p>
+              <h1 className="font-mincho text-3xl mt-1">今日の大局観</h1>
               {!student && <p className="mt-1 text-xs text-[var(--sumi-soft)]">（おためしのため、きろくは残っていません）</p>}
             </header>
 
-            {/* 精度ポイント（主役） */}
-            <section className="card card-kin card-pad text-center relative overflow-hidden">
-              <p className="label-eyebrow">大局観の精度ポイント</p>
-              <p className="font-mincho text-[clamp(4.5rem,26vw,7rem)] leading-none my-1 text-[var(--shu)] pop-num tnum">
-                {score}
-              </p>
-              <p className="inline-block font-fude text-lg px-4 py-0.5 rounded-full bg-[var(--shu)]/10 text-[var(--shu-deep)]">
-                {grade}
-              </p>
-              <p className="text-xs text-[var(--sumi-soft)] mt-2">100にちかいほど正確・互角の局面ほど重く採点します</p>
-            </section>
+            <ScoreCard score={score} />
 
             <section className="card card-pad grid grid-cols-3 gap-2 text-center divide-x divide-[var(--line)]">
               <Stat label="平均のズレ" value={`${meanErr}`} unit="pt" />
@@ -290,9 +301,7 @@ export default function PlayPage() {
             <span className="font-mincho text-lg">
               第{idx + 1}問<span className="text-sm text-[var(--sumi-soft)] font-sans"> ／ 全{positions.length}問</span>
             </span>
-            <span className={`chip ${streak >= 2 ? "bounce-soft !border-[var(--shu)] text-[var(--shu)]" : ""}`}>
-              🔥 {streak}連続
-            </span>
+            <span className={`chip ${streak >= 2 ? "streak-aura bounce-soft" : ""}`}>🔥 {streak}連続</span>
           </div>
           {/* 進行バー */}
           <div className="h-1.5 rounded-full bg-[var(--line)] overflow-hidden">
@@ -304,8 +313,8 @@ export default function PlayPage() {
 
           {current.isSample && <SampleBanner />}
 
-          {/* iPad横は2段組（盤｜操作）、スマホは縦積み */}
-          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-6 lg:items-start flex flex-col gap-3">
+          {/* iPad横・横向きスマホは2段組（盤｜操作）、たて持ちは縦積み */}
+          <div className="play-grid">
             {/* 盤と局面情報 */}
             <div className="flex flex-col gap-2.5">
               <div className="flex items-center justify-center gap-2 flex-wrap">
@@ -313,22 +322,23 @@ export default function PlayPage() {
                 <span className="chip">{STYLE_LABEL[current.styleTag] ?? "—"}</span>
                 <span className="chip">{PHASE_LABEL[current.phaseTag] ?? "—"}</span>
               </div>
-              <div className="w-full max-w-[32rem] mx-auto">
+              <div className="board-stage">
+                {burst && <span className="judge-burst" aria-hidden />}
                 <ShogiBoard state={state} />
               </div>
             </div>
 
             {/* 操作（予測 → 判定 → 開示） */}
-            <div className="lg:sticky lg:top-[68px] flex flex-col gap-3">
+            <div className="play-side lg:sticky lg:top-[70px] flex flex-col gap-3">
               {!reveal ? (
                 <div className="card card-pad flex flex-col gap-4">
                   <p className="text-center font-mincho text-lg">
-                    <span className="text-[var(--shu)]">先手から見て</span>どれくらい？
+                    <span className="text-[var(--kin-light)]">先手から見て</span>どれくらい？
                   </p>
                   <EvalSlider mode={mode} value={guess} onChange={setGuess} disabled={judging} />
-                  {errMsg && <p className="text-sm text-[var(--shu)] text-center">{errMsg}</p>}
+                  {errMsg && <p className="text-sm text-[var(--shu-bright)] text-center">{errMsg}</p>}
                   <button type="button" onClick={judge} disabled={judging} className="btn btn-shu text-lg">
-                    {judging ? "判定中…" : "⚖ 判定する"}
+                    {judging ? "判定中…" : "⚖ 形勢を判定する"}
                   </button>
                 </div>
               ) : (
@@ -354,6 +364,29 @@ export default function PlayPage() {
 }
 
 /* ===== 小さな部品 ===== */
+function ScoreCard({ score }: { score: number }) {
+  const shown = useCountUp(score, 1000);
+  const grade =
+    score >= 85 ? "免許皆伝" : score >= 70 ? "高段者" : score >= 55 ? "有段者" : score >= 40 ? "級位者" : "修行中";
+  const high = score >= 85;
+  return (
+    <section className="card card-kin card-pad text-center relative overflow-hidden">
+      {high && <Sparkles count={16} spread={120} />}
+      <p className="label-eyebrow">大局観の精度ポイント</p>
+      <p
+        className="font-mincho text-[clamp(4.5rem,26vw,7rem)] leading-none my-1 text-[var(--kin-light)] tnum"
+        style={{ textShadow: "0 0 40px rgba(231,201,135,0.45)" }}
+      >
+        {shown}
+      </p>
+      <p className="inline-block font-fude text-lg px-4 py-0.5 rounded-full bg-[var(--shu)]/15 text-[var(--kin-light)]">
+        {grade}
+      </p>
+      <p className="text-xs text-[var(--sumi-soft)] mt-2">100にちかいほど正確・互角の局面ほど重く採点します</p>
+    </section>
+  );
+}
+
 function Choice({
   label,
   value,
@@ -377,7 +410,9 @@ function Choice({
             type="button"
             onClick={() => onChange(o.v)}
             className={`rounded-xl border-2 py-2.5 px-1 text-sm font-bold transition ${
-              value === o.v ? "border-[var(--shu)] bg-[var(--shu)]/8" : "border-[var(--line-strong)]"
+              value === o.v
+                ? "border-[var(--kin)] bg-[var(--kin)]/12 text-[var(--kin-light)]"
+                : "border-[var(--line-strong)] text-[var(--sumi)]"
             }`}
           >
             {o.label}

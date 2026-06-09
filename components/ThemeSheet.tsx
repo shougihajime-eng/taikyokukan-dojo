@@ -33,10 +33,11 @@ export default function ThemeSheet({ open, onClose }: { open: boolean; onClose: 
         type="button"
         aria-label="とじる"
         onClick={onClose}
-        className="absolute inset-0 bg-[#2c2218]/45 scrim-in"
+        className="absolute inset-0 bg-black/60 scrim-in"
       />
-      <div className="sheet-up relative w-full max-w-[34rem] max-h-[88dvh] overflow-y-auto rounded-t-3xl bg-[#f7efdc] border-t border-[var(--line-strong)] shadow-2xl px-5 pt-4 pb-[max(22px,env(safe-area-inset-bottom))]">
-        <div className="mx-auto mb-3 h-1.5 w-11 rounded-full bg-[#2c2218]/25" />
+      <div className="sheet-up relative w-full max-w-[34rem] max-h-[88dvh] overflow-y-auto rounded-t-3xl border-t border-[var(--line-strong)] shadow-2xl px-5 pt-4 pb-[max(22px,env(safe-area-inset-bottom))]"
+        style={{ background: "linear-gradient(180deg, #131a34 0%, #0b1020 100%)" }}>
+        <div className="mx-auto mb-3 h-1.5 w-11 rounded-full bg-white/25" />
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-mincho text-xl">{T.dressup}</h2>
           <button type="button" onClick={onClose} className="text-sm chip">

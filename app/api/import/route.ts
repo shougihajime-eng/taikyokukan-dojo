@@ -71,7 +71,7 @@ function validate(p: ImportPosition): { row?: Record<string, unknown>; error?: s
 }
 
 export async function POST(req: Request) {
-  let body: { pass?: string; seedSamples?: boolean; positions?: ImportPosition[] };
+  let body: { pass?: string; seedSamples?: boolean; purgeSamples?: boolean; positions?: ImportPosition[] };
   try {
     body = await req.json();
   } catch {
@@ -83,6 +83,19 @@ export async function POST(req: Request) {
   }
 
   const sb = supabaseServer();
+
+  // --- かり局面の削除（本番局面を入れたあと、かりの12局面を消すのに使う）---
+  if (body.purgeSamples) {
+    const { data: del, error: delErr } = await sb
+      .from("positions")
+      .delete()
+      .eq("is_sample", true)
+      .select("id");
+    if (delErr) {
+      return NextResponse.json({ error: `かり局面の削除に失敗: ${delErr.message}` }, { status: 500 });
+    }
+    return NextResponse.json({ purged: del?.length ?? 0, kind: "purgeSamples" });
+  }
 
   // --- かり局面の入れ直し ---
   if (body.seedSamples) {

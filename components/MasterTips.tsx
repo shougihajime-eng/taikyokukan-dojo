@@ -81,7 +81,7 @@ export default function MasterTips({ phaseTag }: { phaseTag?: string }) {
   const tip = phaseTag ? PHASE_TIP[phaseTag] : undefined;
 
   return (
-    <details className="rounded-xl border border-[var(--line)] bg-white/55 px-3.5 py-2.5 text-sm">
+    <details className="rounded-xl border border-[var(--line)] bg-[var(--paper)] px-3.5 py-2.5 text-sm">
       <summary className="cursor-pointer select-none font-bold text-[var(--sumi-soft)]">
         📖 形勢判断の4つのものさし（まめちしき）
       </summary>
@@ -102,7 +102,7 @@ export default function MasterTips({ phaseTag }: { phaseTag?: string }) {
               aria-pressed={level === v}
               className={`rounded-full border px-2.5 py-0.5 font-bold transition ${
                 level === v
-                  ? "border-[var(--shu)] bg-[var(--shu)]/10 text-[var(--shu-deep)]"
+                  ? "border-[var(--kin)] bg-[var(--kin)]/12 text-[var(--kin-light)]"
                   : "border-[var(--line)] text-[var(--sumi-soft)]"
               }`}
             >
@@ -114,7 +114,7 @@ export default function MasterTips({ phaseTag }: { phaseTag?: string }) {
         <ul className="flex flex-col gap-1.5">
           {MONOSASHI.map((m) => (
             <li key={m.name}>
-              <span className="font-bold text-[var(--shu-deep)]">{m.name}</span>
+              <span className="font-bold text-[var(--kin-light)]">{m.name}</span>
               <span className="text-[var(--sumi-soft)]">　{level === "easy" ? m.easy : m.deep}</span>
             </li>
           ))}

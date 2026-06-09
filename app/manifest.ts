@@ -9,9 +9,9 @@ export default function manifest(): MetadataRoute.Manifest {
       "局面の形勢をスライダーで予測し、エンジンの評価とのズレを採点。自分の判断のクセを見つけて大局観を鍛える将棋トレーニングアプリ。",
     start_url: "/",
     display: "standalone",
-    orientation: "portrait",
-    background_color: "#f2e4c5",
-    theme_color: "#f2e4c5",
+    orientation: "any",
+    background_color: "#05070f",
+    theme_color: "#0a0f20",
     lang: "ja",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },

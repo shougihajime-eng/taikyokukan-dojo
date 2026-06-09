@@ -65,9 +65,9 @@ export default function TeacherPage() {
                 onKeyDown={(e) => e.key === "Enter" && load()}
                 placeholder="先生の合言葉"
                 type="password"
-                className="rounded-xl border border-[var(--line-strong)] bg-white/80 px-3.5 py-3 text-base outline-none focus:border-[var(--shu)] transition"
+                className="input"
               />
-              {msg && <p className="text-sm text-[var(--shu)]">{msg}</p>}
+              {msg && <p className="text-sm text-[var(--shu-bright)]">{msg}</p>}
               <button type="button" onClick={load} disabled={busy} className="btn btn-sumi">
                 {busy ? "確認中…" : "開く"}
               </button>
@@ -79,7 +79,7 @@ export default function TeacherPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-[var(--sumi)] text-[#f4e8ce] text-xs">
+                    <tr className="text-[var(--kin-light)] text-xs" style={{ background: "linear-gradient(180deg,#1d2748,#121a34)" }}>
                       <th className="px-3 py-3 text-left font-bold">なまえ</th>
                       <th className="px-2 py-3 text-right font-bold">けいこ</th>
                       <th className="px-2 py-3 text-right font-bold">問題数</th>

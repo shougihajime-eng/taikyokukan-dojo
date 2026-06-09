@@ -1,14 +1,17 @@
 @import "tailwindcss";
 
 /* =========================================================
-   大局観道場 — デザインシステム（和×将棋・高級道場）
-   方針: 和紙・墨・朱・金箔。明朝＋筆文字。奥行きのある陰影。
-        iPhone/iPad のセーフエリア対応。端末ごとに clamp で最適サイズ。
-   ⚠ 後半の「盤」「駒」「アニメ」は ShogiBoard.tsx が依存。クラス名・変数名は変更禁止。
+   大局観道場 — デザインシステム「天・大局」
+   コンセプト: 盤上に広がる世界。深い藍の宇宙＋暁（夜明け）の地平の光。
+              金（きん）と朱（しゅ）を灯りに、盤は舞台のように光らせる。
+   方針: 高級・上品・世界観。明朝の題字＋凛とした和ゴシック本文。
+         iPhone/iPad のセーフエリアと縦横どちらにも最適化。
+   ⚠ ファイル末尾「▼ ShogiBoard.tsx 専用（変更禁止）▼」より下は触らないこと。
+      keisei-* / bias-* / 各アニメーションのクラス名は他コンポーネントが依存するため維持する。
    ========================================================= */
 
 :root {
-  /* 書体 */
+  /* ── 書体 ── */
   --font-kaisho: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
   --font-fude: "Yuji Syuku", "Yu Mincho", serif;
   --font-maru: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
@@ -16,18 +19,32 @@
   --font-dot: "DotGothic16", monospace;
   --font-koma: var(--font-kaisho);
 
-  /* 和の基調色 */
-  --sumi: #2c2218;        /* 墨（本文） */
-  --sumi-soft: #6b5b42;   /* うすい墨（副文） */
-  --shu: #b3271a;         /* 朱 */
-  --shu-deep: #8d1d12;
-  --shu-bright: #d8442e;
-  --kin: #b08a45;         /* 金 */
-  --kin-light: #d9bd7e;
-  --ai: #2e3458;          /* 藍（後手側） */
-  --paper: #fbf4e2;
-  --line: rgba(120, 86, 40, 0.18);
-  --line-strong: rgba(120, 86, 40, 0.32);
+  /* ── 基調色（天のテーマ）── */
+  --sumi: #f3ecda;        /* 本文（暁にうかぶ生成り） */
+  --sumi-soft: #a9a890c2; /* 副文（やわらかい月明かり色） */
+  --shu: #f2683f;         /* 朱（灯り・先手・行動） */
+  --shu-deep: #d24a2a;
+  --shu-bright: #ff7d57;
+  --kin: #e7c987;         /* 金（主アクセント） */
+  --kin-light: #f7e6b8;
+  --kin-deep: #b48b48;
+  --ai: #7d92e6;          /* 藍（後手・冷側・星明かり） */
+  --ok: #74d4a0;          /* 好手の緑 */
+  --paper: rgba(20, 28, 54, 0.55);   /* 内側の小パネル（ガラス） */
+
+  /* 宇宙の地（背景レイヤー用） */
+  --bg-0: #05070f;
+  --bg-1: #0a0f1f;
+  --bg-2: #121a36;
+
+  /* ガラスのカード */
+  --glass: rgba(22, 30, 58, 0.62);
+  --glass-2: rgba(15, 21, 44, 0.66);
+  --glass-border: rgba(231, 201, 135, 0.18);
+
+  /* 罫・縁 */
+  --line: rgba(231, 201, 135, 0.16);
+  --line-strong: rgba(231, 201, 135, 0.34);
 
   /* セーフエリア（iPhoneのノッチ・ホームバー） */
   --sat: env(safe-area-inset-top);
@@ -43,21 +60,61 @@ html {
 }
 
 body {
-  /* 和紙: あたたかい紙地 ＋ うっすら粒子 ＋ 上部の光 ＋ 麻の葉風の極薄パターン */
-  background-color: #f6ecd3;
-  background-image:
-    radial-gradient(1100px 560px at 50% -10%, rgba(255, 252, 240, 0.95) 0%, rgba(255, 252, 240, 0) 58%),
-    repeating-linear-gradient(-42deg, rgba(176, 130, 60, 0.022) 0 2px, rgba(255, 255, 255, 0) 2px 7px),
-    radial-gradient(circle at 50% 50%, rgba(176, 138, 69, 0.05) 0.8px, transparent 1.2px),
-    linear-gradient(180deg, #fbf4e2 0%, #f2e4c5 100%);
-  background-size: auto, auto, 22px 22px, auto;
-  background-attachment: fixed;
-  min-height: 100dvh;
+  background-color: var(--bg-0);
   color: var(--sumi);
   font-family: var(--font-gothic);
   font-feature-settings: "palt" 1;
   letter-spacing: 0.01em;
+  min-height: 100dvh;
   overscroll-behavior-y: none;
+  position: relative;
+  isolation: isolate;
+}
+
+/* ── 背景＝広がる世界（固定レイヤー・スクロールで再描画しない）── */
+/* 星空＋星雲 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10% -10% -10% -10%;
+  z-index: -2;
+  background-color: var(--bg-0);
+  background-image:
+    /* 星雲（やわらかい色のたまり） */
+    radial-gradient(40% 32% at 16% 8%, rgba(86, 74, 168, 0.30) 0%, transparent 70%),
+    radial-gradient(46% 38% at 88% 14%, rgba(40, 96, 130, 0.26) 0%, transparent 72%),
+    radial-gradient(60% 40% at 50% 116%, rgba(231, 170, 96, 0.20) 0%, transparent 70%),
+    /* 星（3層・タイル間隔をずらして格子感を消す） */
+    radial-gradient(1.4px 1.4px at 38px 22px, rgba(255, 255, 255, 0.85), transparent 60%),
+    radial-gradient(1.2px 1.2px at 160px 120px, rgba(255, 252, 240, 0.7), transparent 60%),
+    radial-gradient(1.6px 1.6px at 250px 60px, rgba(231, 201, 135, 0.8), transparent 60%),
+    radial-gradient(1px 1px at 90px 200px, rgba(255, 255, 255, 0.55), transparent 60%),
+    radial-gradient(1.2px 1.2px at 320px 260px, rgba(180, 200, 255, 0.6), transparent 60%),
+    /* 地（深い藍のグラデ） */
+    linear-gradient(180deg, #05070f 0%, #0a0f20 42%, #101937 100%);
+  background-size:
+    auto, auto, auto,
+    360px 360px, 430px 430px, 290px 290px, 380px 380px, 510px 510px,
+    auto;
+  background-repeat: repeat;
+  animation: drift 90s linear infinite alternate;
+}
+/* 暁の地平（下からの暖かい光）＋上下のしまり */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(120% 60% at 50% 122%, rgba(247, 196, 120, 0.16) 0%, rgba(247, 196, 120, 0.05) 36%, transparent 60%),
+    radial-gradient(100% 70% at 50% -20%, rgba(0, 0, 0, 0.35) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(5, 7, 15, 0.25) 0%, transparent 22%, transparent 78%, rgba(5, 7, 15, 0.4) 100%);
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-26px, -16px, 0); }
 }
 
 /* 見出し系 */
@@ -79,19 +136,19 @@ body {
   width: 100%;
   margin-inline: auto;
 }
-.wrap-readable { max-width: 34rem; }   /* 文章・フォーム中心の画面 */
-.wrap-wide { max-width: 60rem; }       /* けいこ・先生表 */
-.safe-bottom { padding-bottom: max(20px, var(--sab)); }
+.wrap-readable { max-width: 34rem; }
+.wrap-wide { max-width: 62rem; }
+.safe-bottom { padding-bottom: max(22px, var(--sab)); }
 
-/* 上部バー（けいこ・クセ・先生の各画面） */
+/* 上部バー */
 .appbar {
   position: sticky;
   top: 0;
   z-index: 30;
   padding-top: var(--sat);
-  background: linear-gradient(180deg, rgba(247, 238, 218, 0.94) 0%, rgba(247, 238, 218, 0.74) 100%);
-  backdrop-filter: blur(12px) saturate(1.1);
-  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  background: linear-gradient(180deg, rgba(8, 12, 26, 0.86) 0%, rgba(8, 12, 26, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
   border-bottom: 1px solid var(--line);
 }
 .appbar-inner {
@@ -99,49 +156,54 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  height: 52px;
+  height: 54px;
   padding-inline: max(14px, var(--sal)) max(14px, var(--sar));
-  max-width: 60rem;
+  max-width: 62rem;
   margin-inline: auto;
 }
 
 /* =========================================================
-   カード（和紙の札）
+   カード（夜空にうかぶガラスの札）
    ========================================================= */
 .card {
   position: relative;
-  border-radius: 18px;
+  border-radius: 20px;
   background:
-    linear-gradient(180deg, rgba(255, 253, 247, 0.9) 0%, rgba(252, 244, 228, 0.8) 100%);
-  border: 1px solid var(--line);
+    linear-gradient(180deg, var(--glass) 0%, var(--glass-2) 100%);
+  border: 1px solid var(--glass-border);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.65),
-    0 1px 2px rgba(70, 48, 18, 0.06),
-    0 18px 38px -22px rgba(70, 48, 18, 0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 30px rgba(125, 146, 230, 0.05),
+    0 1px 1px rgba(0, 0, 0, 0.3),
+    0 26px 50px -26px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px) saturate(1.05);
+  -webkit-backdrop-filter: blur(12px) saturate(1.05);
 }
-/* 金箔の極細枠（特別なカード用） */
+/* 金の縁＋ほのかな内側の灯り（特別な札） */
 .card-kin {
   border-color: transparent;
   background:
-    linear-gradient(180deg, rgba(255, 253, 247, 0.92), rgba(252, 244, 228, 0.84)) padding-box,
-    linear-gradient(150deg, var(--kin-light), var(--kin) 45%, #8a6a30 100%) border-box;
+    linear-gradient(180deg, var(--glass) 0%, var(--glass-2) 100%) padding-box,
+    linear-gradient(150deg, var(--kin-light), var(--kin) 42%, var(--kin-deep) 100%) border-box;
   border: 1.5px solid transparent;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 40px rgba(231, 201, 135, 0.08),
+    0 26px 56px -26px rgba(0, 0, 0, 0.8),
+    0 0 40px -16px rgba(231, 201, 135, 0.3);
 }
-.card-pad { padding: clamp(16px, 4.5vw, 22px); }
+.card-pad { padding: clamp(16px, 4.5vw, 24px); }
 
-/* 小見出し（札の中の見出し） */
+/* 小見出し */
 .label-eyebrow {
   font-size: 11px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   font-weight: 700;
   color: var(--kin);
-  text-transform: none;
 }
 
 /* =========================================================
-   ボタン（押したくなる質感）
+   ボタン（押したくなる質感・灯りがともる）
    ========================================================= */
 .btn {
   display: inline-flex;
@@ -155,37 +217,74 @@ body {
   font-weight: 700;
   font-size: clamp(15px, 4vw, 17px);
   line-height: 1.2;
-  transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.12s ease, box-shadow 0.25s ease, filter 0.2s ease;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
 }
 .btn:active { transform: scale(0.975); }
-.btn:disabled { opacity: 0.55; cursor: default; transform: none; }
+.btn:disabled { opacity: 0.5; cursor: default; transform: none; filter: saturate(0.7); }
+/* 通る光（ボタンのつや） */
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.22) 48%, transparent 64%);
+  background-size: 250% 100%;
+  background-position: 180% 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.btn:not(:disabled):hover::after { opacity: 1; animation: btn-sheen 0.9s ease; }
+@keyframes btn-sheen { from { background-position: 180% 0; } to { background-position: -80% 0; } }
 
 .btn-shu {
-  color: #fff6ec;
-  background: linear-gradient(180deg, #db4a33 0%, #b3271a 60%, #9c2014 100%);
+  color: #fff4ec;
+  background: linear-gradient(180deg, #ff7d57 0%, #f2683f 48%, #d24a2a 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.32),
-    inset 0 -2px 6px rgba(110, 20, 10, 0.5),
-    0 10px 22px -10px rgba(150, 30, 15, 0.7);
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 8px rgba(150, 40, 18, 0.55),
+    0 12px 26px -10px rgba(242, 104, 63, 0.6),
+    0 0 26px -8px rgba(242, 104, 63, 0.55);
 }
-.btn-shu:hover { filter: brightness(1.04); }
+.btn-shu:not(:disabled):hover { filter: brightness(1.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 8px rgba(150,40,18,0.55), 0 14px 30px -8px rgba(242,104,63,0.7), 0 0 38px -6px rgba(242,104,63,0.7); }
 
 .btn-sumi {
-  color: #f4e8ce;
-  background: linear-gradient(180deg, #46392a 0%, #2c2218 100%);
+  color: var(--kin-light);
+  background: linear-gradient(180deg, #1d2748 0%, #121a34 100%);
+  border: 1px solid var(--line-strong);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 10px 22px -12px rgba(40, 26, 10, 0.7);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 26px -14px rgba(0, 0, 0, 0.8);
 }
+.btn-sumi:not(:disabled):hover { box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 30px -12px rgba(0,0,0,0.85), 0 0 26px -10px rgba(231,201,135,0.3); }
+
 .btn-ghost {
   color: var(--sumi);
-  background: rgba(255, 253, 247, 0.5);
+  background: rgba(255, 255, 255, 0.04);
   border: 1.5px solid var(--line-strong);
 }
-.btn-ghost:hover { background: rgba(255, 253, 247, 0.8); }
+.btn-ghost:not(:disabled):hover { background: rgba(255, 255, 255, 0.08); border-color: var(--kin); }
+
+/* =========================================================
+   入力欄（フォーム）
+   ========================================================= */
+.input {
+  width: 100%;
+  border-radius: 14px;
+  border: 1.5px solid var(--line-strong);
+  background: rgba(8, 12, 26, 0.55);
+  color: var(--sumi);
+  padding: 12px 14px;
+  font-size: 16px; /* iOS の自動ズームを防ぐ */
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.input::placeholder { color: rgba(169, 168, 144, 0.6); }
+.input:focus { border-color: var(--kin); box-shadow: 0 0 0 3px rgba(231, 201, 135, 0.18); }
 
 /* 落款（らっかん）風の朱印 */
 .hanko {
@@ -200,40 +299,94 @@ body {
   font-size: 0.6em;
   line-height: 1;
   transform: rotate(6deg);
-  box-shadow: 0 2px 5px rgba(120, 30, 10, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(242, 104, 63, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
-/* 縦書きの題字（ヒーロー用） */
+/* 縦書きの題字 */
 .tate {
   writing-mode: vertical-rl;
   text-orientation: upright;
   letter-spacing: 0.1em;
 }
 
-/* チップ（手番・戦法・局面帯） */
+/* チップ */
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 11px;
+  padding: 5px 12px;
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 700;
+  color: var(--sumi);
   border: 1px solid var(--line-strong);
-  background: rgba(255, 253, 247, 0.6);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   white-space: nowrap;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.12s ease;
 }
+button.chip:active { transform: scale(0.95); }
+button.chip:hover { border-color: var(--kin); }
 .chip-fill {
-  background: linear-gradient(180deg, #3b3024, #2c2218);
-  color: #f4e8ce;
-  border-color: transparent;
+  background: linear-gradient(180deg, #243056, #161e3a);
+  color: var(--kin-light);
+  border-color: var(--line-strong);
 }
 
 /* 区切りの罫（金の細線） */
 .rule-kin {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--kin) 18%, var(--kin) 82%, transparent);
-  opacity: 0.5;
+  opacity: 0.4;
+}
+
+/* 盤の舞台（光をまとう）。画面の高さでも頭打ちにして、横向きでもはみ出さない。 */
+.board-stage {
+  position: relative;
+  width: min(100%, 32rem, 88svh);
+  margin-inline: auto;
+}
+.board-stage::before {
+  content: "";
+  position: absolute;
+  inset: -7% -7% -9% -7%;
+  z-index: -1;
+  border-radius: 28px;
+  background: radial-gradient(60% 55% at 50% 42%, rgba(231, 201, 135, 0.22), transparent 72%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+/* けいこ画面のレイアウト：たて持ち＝縦積み／iPad横・横向きスマホ＝盤｜操作の2段組 */
+.play-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+/* iPad横・PC */
+@media (min-width: 1024px) {
+  .play-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    gap: 1.5rem;
+    align-items: start;
+  }
+}
+/* 横向きスマホ（背が低い）：盤は画面の高さに収め、操作を右に細く置く。
+   画面のたてが短いので、上の余白・ボタンの高さも詰めて「判定」まで指が届くようにする。 */
+@media (orientation: landscape) and (max-height: 600px) {
+  .play-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 16.5rem;
+    gap: 0.9rem;
+    align-items: start;
+  }
+  .board-stage { width: min(100%, 66svh); }
+  .appbar-inner { height: 46px; }
+  /* 操作カードを少しコンパクトに */
+  .play-side .card-pad { padding: 13px 15px; }
+  .play-side .btn { min-height: 46px; }
 }
 
 /* =========================================================
@@ -241,17 +394,19 @@ body {
    ========================================================= */
 .keisei-track {
   background: linear-gradient(90deg,
-    #283056 0%, #545b86 28%, #c9bfa6 47%, #ead9c2 50%, #e6b49d 53%, #cf5a44 72%, #b3271a 100%);
-  box-shadow: inset 0 1px 3px rgba(40, 25, 10, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+    #2b3566 0%, #5a64a0 26%, #c9c4d8 46%, #efe6d3 50%, #f0c2a6 54%, #ef6f4d 74%, #e8492a 100%);
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.45),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.2),
+    0 0 18px -6px rgba(231, 201, 135, 0.35);
 }
-/* 中央（互角）の目盛り線 */
 .keisei-mid {
   position: absolute;
   left: 50%;
   top: -3px;
   bottom: -3px;
   width: 2px;
-  background: rgba(44, 34, 24, 0.45);
+  background: rgba(10, 14, 28, 0.5);
   transform: translateX(-50%);
 }
 
@@ -268,36 +423,48 @@ body {
 .keisei-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #fffefb 0%, #f6ead0 55%, #e7d2a6 100%);
-  border: 2.5px solid var(--sumi);
-  box-shadow: 0 3px 8px rgba(40, 25, 5, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: radial-gradient(circle at 38% 30%, #fffefb 0%, #f6ead0 52%, #e2c690 100%);
+  border: 2px solid #0a0e1c;
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.5),
+    0 0 0 4px rgba(231, 201, 135, 0.35),
+    0 0 18px rgba(231, 201, 135, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: box-shadow 0.18s ease, transform 0.1s ease;
+}
+.keisei-slider:active::-webkit-slider-thumb {
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.55),
+    0 0 0 6px rgba(231, 201, 135, 0.45),
+    0 0 28px rgba(231, 201, 135, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 .keisei-slider::-moz-range-thumb {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #fffefb 0%, #f6ead0 55%, #e7d2a6 100%);
-  border: 2.5px solid var(--sumi);
-  box-shadow: 0 3px 8px rgba(40, 25, 5, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: radial-gradient(circle at 38% 30%, #fffefb 0%, #f6ead0 52%, #e2c690 100%);
+  border: 2px solid #0a0e1c;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(231, 201, 135, 0.35), 0 0 18px rgba(231, 201, 135, 0.6);
 }
-.keisei-slider:disabled::-webkit-slider-thumb { opacity: 0.5; }
-.keisei-slider:disabled::-moz-range-thumb { opacity: 0.5; }
+.keisei-slider:disabled::-webkit-slider-thumb { opacity: 0.5; box-shadow: none; }
+.keisei-slider:disabled::-moz-range-thumb { opacity: 0.5; box-shadow: none; }
 
 /* メーターの針 */
 .needle-you {
   width: 0; height: 0;
   border-inline: 7px solid transparent;
-  border-top: 11px solid var(--sumi);
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+  border-top: 12px solid var(--kin-light);
+  filter: drop-shadow(0 0 4px rgba(231, 201, 135, 0.8));
 }
 .needle-ai {
   width: 0; height: 0;
   border-inline: 7px solid transparent;
-  border-bottom: 11px solid var(--shu);
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+  border-bottom: 12px solid var(--shu);
+  filter: drop-shadow(0 0 4px rgba(242, 104, 63, 0.8));
 }
 
 /* =========================================================
@@ -307,35 +474,91 @@ body {
   position: relative;
   height: 22px;
   border-radius: 9999px;
-  background: rgba(120, 86, 40, 0.12);
+  background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
-  box-shadow: inset 0 1px 2px rgba(40, 25, 10, 0.12);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 .bias-mid {
   position: absolute;
   left: 50%;
   top: 0; bottom: 0;
   width: 1.5px;
-  background: rgba(44, 34, 24, 0.35);
+  background: rgba(231, 201, 135, 0.4);
   transform: translateX(-50%);
 }
 
 /* =========================================================
-   アニメーション
+   「光る」モチベ演出
+   ========================================================= */
+/* 連続正解のオーラ（炎） */
+.streak-aura {
+  box-shadow: 0 0 0 1px rgba(242, 104, 63, 0.5), 0 0 20px -2px rgba(242, 104, 63, 0.7);
+  border-color: var(--shu) !important;
+  color: var(--shu-bright) !important;
+}
+/* 判定したしゅんかんの光のリング（盤の舞台に重ねる） */
+.judge-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: 24px;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 45%, rgba(231, 201, 135, 0.55), transparent 60%);
+  opacity: 0;
+  animation: judge-burst 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes judge-burst {
+  0% { opacity: 0; transform: scale(0.85); }
+  30% { opacity: 0.9; }
+  100% { opacity: 0; transform: scale(1.12); }
+}
+/* ピタリ！の火花（放射する小さな光） */
+.spark {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 7px; height: 7px;
+  margin: -3.5px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff 0%, var(--kin) 45%, transparent 72%);
+  opacity: 0;
+  animation: spark-fly 0.95s cubic-bezier(0.15, 0.7, 0.25, 1) both;
+}
+@keyframes spark-fly {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1); }
+}
+/* 大成功の縁の金フラッシュ */
+.edge-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  box-shadow: inset 0 0 120px 10px rgba(231, 201, 135, 0.5);
+  opacity: 0;
+  animation: edge-flash 0.9s ease both;
+}
+@keyframes edge-flash {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* =========================================================
+   アニメーション（共通）
    ========================================================= */
 @keyframes rise-in { from { transform: translateY(22px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.rise-in { animation: rise-in 0.4s cubic-bezier(0.22, 0.9, 0.3, 1) both; }
+.rise-in { animation: rise-in 0.42s cubic-bezier(0.22, 0.9, 0.3, 1) both; }
 
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 .fade-in { animation: fade-in 0.3s ease both; }
 
 @keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.sheet-up { animation: sheet-up 0.32s cubic-bezier(0.32, 0.9, 0.35, 1) both; }
+.sheet-up { animation: sheet-up 0.34s cubic-bezier(0.32, 0.9, 0.35, 1) both; }
 
 @keyframes scrim-in { from { opacity: 0; } to { opacity: 1; } }
 .scrim-in { animation: scrim-in 0.25s ease both; }
 
-/* 順に出てくる */
 .stagger > * { animation: rise-in 0.45s cubic-bezier(0.22, 0.9, 0.3, 1) both; }
 .stagger > *:nth-child(1) { animation-delay: 0.02s; }
 .stagger > *:nth-child(2) { animation-delay: 0.09s; }
@@ -352,7 +575,7 @@ body {
 
 @keyframes sheen { 0% { background-position: -120% 0; } 100% { background-position: 220% 0; } }
 .gold-sheen {
-  background: linear-gradient(110deg, var(--kin) 0%, var(--kin-light) 40%, #fff3d6 50%, var(--kin-light) 60%, var(--kin) 100%);
+  background: linear-gradient(110deg, var(--kin-deep) 0%, var(--kin) 38%, #fff3d6 50%, var(--kin) 62%, var(--kin-deep) 100%);
   background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -360,13 +583,16 @@ body {
   animation: sheen 5s linear infinite;
 }
 
-.meter-needle { transition: left 0.75s cubic-bezier(0.25, 1, 0.4, 1); }
+.meter-needle { transition: left 0.8s cubic-bezier(0.25, 1, 0.4, 1); }
 
 @media (prefers-reduced-motion: reduce) {
-  .stagger > *, .rise-in, .fade-in, .pop-num, .sheet-up, .scrim-in, .bounce-soft, .gold-sheen, .meter-needle {
+  body::before { animation: none !important; }
+  .stagger > *, .rise-in, .fade-in, .pop-num, .sheet-up, .scrim-in, .bounce-soft,
+  .gold-sheen, .meter-needle, .judge-burst, .spark, .edge-flash, .btn::after {
     animation: none !important;
     transition: none !important;
   }
+  .judge-burst, .spark, .edge-flash { display: none !important; }
 }
 
 /* =========================================================

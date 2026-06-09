@@ -19,16 +19,20 @@ export default function EvalSlider({ mode, value, onChange, disabled }: Props) {
 
   return (
     <div className="flex flex-col gap-2.5">
-      {/* いまの予測値（大きく） */}
+      {/* いまの予測値（大きく・ほのかに光る） */}
       <div className="text-center">
-        <span className="font-mincho text-3xl tnum pop-num" key={mode === "winrate" ? pct : cp}>
+        <span
+          className="font-mincho text-3xl tnum pop-num"
+          key={mode === "winrate" ? pct : cp}
+          style={{ textShadow: "0 0 20px rgba(231,201,135,0.35)" }}
+        >
           {mode === "winrate" ? (
             <>
-              先手 <span className="text-[var(--shu)]">{pct}</span>
-              <span className="text-lg">%</span>
+              先手 <span className="text-[var(--kin-light)]">{pct}</span>
+              <span className="text-lg text-[var(--sumi-soft)]">%</span>
             </>
           ) : (
-            <span className="text-[var(--shu)]">
+            <span className="text-[var(--kin-light)]">
               {cp > 0 ? `+${cp}` : cp}
             </span>
           )}

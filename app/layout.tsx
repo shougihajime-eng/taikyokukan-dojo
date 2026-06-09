@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "大局観",
   },
   openGraph: {
@@ -29,7 +29,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   // ピンチ拡大は禁止しない（弱視の方・小さい字を読みたい方のため）
   viewportFit: "cover", // iPhone のノッチ・ホームバー領域まで使う
-  themeColor: "#f2e4c5",
+  themeColor: "#0a0f20",
 };
 
 // 駒に使う文字だけを読み込む（軽くするため）

@@ -70,25 +70,38 @@ export default function HomePage() {
 
         {/* ヒーロー（題字） */}
         <header className="relative card card-kin card-pad overflow-hidden">
-          {/* 背景の駒モチーフ（うっすら） */}
+          {/* 背景：広がる世界（地平のひかり＋星） */}
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-6 -bottom-8 font-fude text-[10rem] leading-none text-[var(--shu)] opacity-[0.06] select-none"
+            className="pointer-events-none absolute inset-0 select-none"
+            style={{
+              background:
+                "radial-gradient(80% 60% at 78% 120%, rgba(247,196,120,0.18), transparent 60%), radial-gradient(50% 40% at 15% 5%, rgba(125,146,230,0.16), transparent 70%)",
+            }}
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-5 -bottom-9 font-fude text-[10rem] leading-none text-[var(--kin)] opacity-[0.10] select-none"
+            style={{ textShadow: "0 0 60px rgba(231,201,135,0.5)" }}
           >
-            王
+            局
           </span>
           <div className="relative flex items-stretch gap-4">
             <div className="flex flex-col justify-center">
               <p className="label-eyebrow mb-1">将棋・形勢判断トレーニング</p>
-              <h1 className="font-fude text-[clamp(2.6rem,12vw,4rem)] leading-[1.05] tracking-wide">
+              <h1
+                className="font-fude text-[clamp(2.6rem,12vw,4rem)] leading-[1.05] tracking-wide text-[var(--kin-light)]"
+                style={{ textShadow: "0 0 30px rgba(231,201,135,0.35)" }}
+              >
                 大局観
                 <br />
                 道場
               </h1>
-              <p className="mt-3 text-sm text-[var(--sumi-soft)] leading-relaxed">
+              <p className="mt-3 font-mincho text-sm text-[var(--kin)]">盤上に、世界が広がる。</p>
+              <p className="mt-2 text-sm text-[var(--sumi-soft)] leading-relaxed">
                 盤面を見て「先手がどれくらい有利か」を予想。
                 <br />
-                AIの判定とのズレで、あなたの<b className="text-[var(--shu)]">見る目</b>を数値にします。
+                AIの判定とのズレで、あなたの<b className="text-[var(--shu-bright)]">見る目</b>を数値にします。
               </p>
             </div>
             <div className="flex items-start pt-1">
@@ -124,7 +137,7 @@ export default function HomePage() {
           {student ? (
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm">
-                <span className="font-bold text-base">{student.name}</span> さんでログイン中
+                <span className="font-bold text-base text-[var(--kin-light)]">{student.name}</span> さんでログイン中
                 <span className="block text-xs text-[var(--sumi-soft)] mt-0.5">きろくはクラウドに保存されます</span>
               </p>
               <button type="button" onClick={logout} className="chip shrink-0">
@@ -143,7 +156,7 @@ export default function HomePage() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder={T.namePh}
                 maxLength={20}
-                className="rounded-xl border border-[var(--line-strong)] bg-white/80 px-3.5 py-3 text-base outline-none focus:border-[var(--shu)] transition"
+                className="input"
               />
               <input
                 value={pass}
@@ -152,9 +165,9 @@ export default function HomePage() {
                 placeholder={T.passPh}
                 maxLength={30}
                 type="password"
-                className="rounded-xl border border-[var(--line-strong)] bg-white/80 px-3.5 py-3 text-base outline-none focus:border-[var(--shu)] transition"
+                className="input"
               />
-              {msg && <p className="text-sm text-[var(--shu)]">{msg}</p>}
+              {msg && <p className="text-sm text-[var(--shu-bright)]">{msg}</p>}
               <button type="button" onClick={login} disabled={busy} className="btn btn-sumi">
                 {busy ? T.loginChecking : T.loginBtn}
               </button>
@@ -166,7 +179,7 @@ export default function HomePage() {
         </section>
 
         <footer className="flex items-center justify-center gap-5 text-xs text-[var(--sumi-soft)] pt-1">
-          <Link href="/teacher" className="underline underline-offset-2">
+          <Link href="/teacher" className="underline underline-offset-2 hover:text-[var(--kin)] transition">
             {T.teacher}
           </Link>
         </footer>
@@ -180,11 +193,15 @@ export default function HomePage() {
 function FeatureRow({ icon, title, body }: { icon: string; title: string; body: string }) {
   return (
     <li className="flex items-start gap-3">
-      <span className="grid place-items-center w-9 h-9 shrink-0 rounded-xl bg-[var(--shu)]/10 text-lg" aria-hidden>
+      <span
+        className="grid place-items-center w-9 h-9 shrink-0 rounded-xl text-lg"
+        style={{ background: "rgba(231,201,135,0.12)", border: "1px solid var(--line)" }}
+        aria-hidden
+      >
         {icon}
       </span>
       <div>
-        <p className="font-bold text-sm">{title}</p>
+        <p className="font-bold text-sm text-[var(--kin-light)]">{title}</p>
         <p className="text-xs text-[var(--sumi-soft)] leading-relaxed">{body}</p>
       </div>
     </li>

@@ -30,17 +30,19 @@ export default function TrendChart({ data }: { data: TrendPoint[] }) {
     <div className="h-48 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: -22 }}>
-          <XAxis dataKey="day" tick={{ fontSize: 10, fill: "#7a5224" }} tickLine={false} />
-          <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#7a5224" }} tickLine={false} axisLine={false} />
+          <XAxis dataKey="day" tick={{ fontSize: 10, fill: "#c9b894" }} tickLine={false} />
+          <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#c9b894" }} tickLine={false} axisLine={false} />
           <Tooltip
             formatter={(value, name) =>
               name === "score" ? [`${value ?? "—"}点`, "精度"] : [value ?? "—", name]
             }
             labelFormatter={(label) => `${label} のけいこ`}
-            contentStyle={{ fontSize: 12, borderRadius: 10, border: "1px solid #c99b5f", background: "#fffdf6" }}
+            contentStyle={{ fontSize: 12, borderRadius: 10, border: "1px solid #b48b48", background: "#0e1430", color: "#f3ecda" }}
+            labelStyle={{ color: "#e7c987" }}
+            cursor={{ stroke: "#b48b48", strokeOpacity: 0.4 }}
           />
-          <ReferenceLine y={50} stroke="#c99b5f" strokeDasharray="4 4" />
-          <Line type="monotone" dataKey="score" stroke="#b32718" strokeWidth={2.5} dot={{ r: 3.5, fill: "#b32718" }} />
+          <ReferenceLine y={50} stroke="#b48b48" strokeDasharray="4 4" strokeOpacity={0.5} />
+          <Line type="monotone" dataKey="score" stroke="#ff7d57" strokeWidth={2.5} dot={{ r: 3.5, fill: "#ff7d57" }} />
         </LineChart>
       </ResponsiveContainer>
     </div>

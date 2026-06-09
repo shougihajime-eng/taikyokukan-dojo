@@ -65,3 +65,27 @@ export function materialText(st: GameState): string {
   else verdict = "ほぼ五分の交換";
   return `駒の損得: ${verdict}（先手から見て ${detail}）`;
 }
+
+/** 駒の損得を数字でも返す（理由文の組み立て用・枚数の機械数えのみ）。
+ *  valueSum>0=先手得 / <0=後手得（歩=1換算）。topPiece=いちばん大きい得の駒名（あれば） */
+export function materialSummary(st: GameState): {
+  valueSum: number;
+  side: "sente" | "gote" | "even";
+  topPiece: string | null;
+} {
+  const gains = materialGains(st);
+  let valueSum = 0;
+  let topPiece: string | null = null;
+  let topVal = 0;
+  for (const t of ORDER) {
+    const n = gains[t];
+    valueSum += n * VALUE[t];
+    const mag = Math.abs(n) * VALUE[t];
+    if (mag > topVal) {
+      topVal = mag;
+      topPiece = NAME[t];
+    }
+  }
+  const side = valueSum > 0 ? "sente" : valueSum < 0 ? "gote" : "even";
+  return { valueSum, side, topPiece };
+}
