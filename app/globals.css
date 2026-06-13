@@ -389,6 +389,24 @@ button.chip:hover { border-color: var(--kin); }
   .play-side .btn { min-height: 46px; }
 }
 
+/* スマホ・タブレットの「たて向き」だけ：1画面で完結（本人方針 2026-06-14）。
+   盤はいつも大きいまま／解説の文だけスクロール／「判定」「次の局面へ」は常に見える。
+   ※パソコン幅（1024px〜）・iPad横・横向きには一切影響しない。 */
+@media (max-width: 1023px) and (orientation: portrait) {
+  main:has(.play-grid) { flex: 0 0 auto; height: 100svh; overflow: hidden; }
+  main:has(.play-grid) .app-main { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  main:has(.play-grid) .wrap-wide { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+  .play-grid { flex: 1 1 auto; min-height: 0; }
+  .play-grid > :first-child { flex: 0 0 auto; }       /* 盤の列は大きいまま固定 */
+  .board-stage { width: min(100%, 30rem, calc(100svh - 348px)); }
+  .play-side { flex: 1 1 auto; min-height: 0; }
+  /* スライダー/解説のカードだけスクロール、答え合わせ後の「次の局面へ」は固定 */
+  .play-side > .card { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  .play-side > .btn { flex: 0 0 auto; }
+  /* 出題中の「形勢を判定する」ボタンはカード下にくっついて いつも見える */
+  .play-side > .card > .btn { position: sticky; bottom: 0; z-index: 3; box-shadow: 0 -10px 16px -6px rgba(8,10,26,0.85); }
+}
+
 /* =========================================================
    形勢メーター・スライダー（このアプリの主役）
    ========================================================= */
