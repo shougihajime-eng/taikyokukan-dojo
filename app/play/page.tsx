@@ -287,7 +287,12 @@ export default function PlayPage() {
 
   // ===== けいこ中 =====
   if (!current || !state) {
-    return <main className="p-6 text-center">局面を読み込めませんでした</main>;
+    return (
+      <main className="flex flex-col flex-1">
+        <AppHeader back="/" backLabel="ホーム" />
+        <div className="p-6 text-center">局面を読み込めませんでした</div>
+      </main>
+    );
   }
   const turnLabel = state.turn === "sente" ? "▲先手の番" : "△後手の番";
 
