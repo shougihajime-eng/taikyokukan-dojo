@@ -6,6 +6,29 @@ import { useSettings } from "@/lib/settings";
 import { uiText } from "@/lib/text";
 import { loadStudent, saveStudent, clearStudent, type Student } from "@/lib/student";
 import ThemeSheet from "@/components/ThemeSheet";
+import Walkthrough, { type WalkStep } from "@/components/Walkthrough";
+import Splash from "@/components/Splash";
+
+// 🔰 はじめての人への使い方ガイドの中身（ひらがな＝こども／漢字＝大人）
+function walkSteps(kana: boolean): WalkStep[] {
+  return kana
+    ? [
+        { e: "🔰", t: "ようこそ！", b: "ここは、どっちが <b>ゆうり</b>かを 見る目を きたえる どうじょうだよ。<br>30びょうで つかいかたを みてみよう。" },
+        { e: "▶️", t: "けいこを はじめる", b: "<b>▶けいこをはじめる</b>を おすと、もんだいの ばんめんが でるよ。" },
+        { e: "🎚️", t: "よそうする", b: "ばんを 見て、<b>せんてが どれくらい ゆうり</b>かを、<b>スライダー</b>で よそうするよ。" },
+        { e: "🎯", t: "さいてん", b: "AIの はんていとの <b>ズレ</b>が てんすうに なるよ。<br>あなたの <b>見る目</b>が すうじで わかる。" },
+        { e: "📈", t: "じぶんのクセ", b: "つづけると、じぶんの <b>クセ</b>（はやとちり など）が 見えるよ。<br>ログインすると せいせきが ぜんぶの きかいに のこるよ。" },
+        { e: "🎨", t: "きせかえ・もういちど", b: "<b>🎨きせかえ</b>で 見た目を かえられるよ。<br>もういちど みたいときは、みぎうえの <b>❔つかいかた</b>を おしてね。" },
+      ]
+    : [
+        { e: "🔰", t: "ようこそ！", b: "ここは、どちらが <b>有利</b>かを見る目をきたえる道場です。<br>30秒で使い方を見てみましょう。" },
+        { e: "▶️", t: "けいこを始める", b: "<b>▶けいこをはじめる</b>を押すと、問題の盤面が出ます。" },
+        { e: "🎚️", t: "予想する", b: "盤面を見て、<b>先手がどれくらい有利か</b>を<b>スライダー</b>で予想します。" },
+        { e: "🎯", t: "採点", b: "AIの判定との<b>ズレ</b>が点数になります。<br>あなたの<b>見る目</b>が数値で分かります。" },
+        { e: "📈", t: "自分のクセ", b: "つづけると、自分の<b>クセ</b>（早とちりなど）が見えます。<br>ログインすると成績がすべての端末に残ります。" },
+        { e: "🎨", t: "きせかえ・もう一度", b: "<b>🎨きせかえ</b>で見た目を変えられます。<br>もう一度見たいときは、右上の<b>❔使い方</b>を押してください。" },
+      ];
+}
 
 export default function HomePage() {
   const { settings } = useSettings();
@@ -61,8 +84,16 @@ export default function HomePage() {
   return (
     <main className="app-main safe-bottom" style={{ paddingTop: "max(20px, var(--sat))" }}>
       <div className="wrap wrap-readable stagger flex flex-col gap-5 pb-6">
-        {/* 右上のきせかえ */}
-        <div className="flex justify-end -mb-2 pt-1">
+        {/* 右上のきせかえ・使い方 */}
+        <div className="flex justify-end gap-2 -mb-2 pt-1">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event("taikyoku-walk-open"))}
+            className="chip"
+            aria-label="使い方"
+          >
+            ❔ {settings.textMode === "kana" ? "つかいかた" : "使い方"}
+          </button>
           <button type="button" onClick={() => setSheet(true)} className="chip" aria-label="きせかえ">
             🎨 きせかえ
           </button>
@@ -90,7 +121,7 @@ export default function HomePage() {
             <div className="flex flex-col justify-center">
               <p className="label-eyebrow mb-1">将棋・形勢判断トレーニング</p>
               <h1
-                className="font-fude text-[clamp(2.6rem,12vw,4rem)] leading-[1.05] tracking-wide text-[var(--kin-light)]"
+                className="title-halo font-fude text-[clamp(2.6rem,12vw,4rem)] leading-[1.05] tracking-wide text-[var(--kin-light)]"
                 style={{ textShadow: "0 0 30px rgba(231,201,135,0.35)" }}
               >
                 大局観
@@ -186,6 +217,17 @@ export default function HomePage() {
       </div>
 
       <ThemeSheet open={sheet} onClose={() => setSheet(false)} />
+
+      {/* 🔰 はじめての人への使い方ガイド（起動画面が消えてから・初回だけ自動／❔つかいかたで再表示） */}
+      <Walkthrough
+        steps={walkSteps(settings.textMode === "kana")}
+        storageKey="taikyoku_tutorial_seen_v1"
+        openEvent="taikyoku-walk-open"
+        waitForSelector=".splash-screen"
+      />
+
+      {/* 起動画面（このセッションで最初に開いたときだけ） */}
+      <Splash />
     </main>
   );
 }

@@ -613,6 +613,187 @@ button.chip:hover { border-color: var(--kin); }
   .judge-burst, .spark, .edge-flash { display: none !important; }
 }
 
+/* ============================================================
+   ツメル譲りの高級演出（暗い藍×金バージョン）2026-06-20 移植
+   ① 起動画面（スプラッシュ）＝筆ロゴが書かれる＋金粉＋落款
+   ② 金の光のハロー（題字の後ろ）
+   ============================================================ */
+
+/* ===== ① 起動画面（スプラッシュ・暗い金）===== */
+.splash-screen {
+  position: fixed; inset: 0; z-index: 70;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  background: radial-gradient(120% 90% at 50% 8%, #121a36 0%, #0a0f1f 48%, #05070f 100%);
+  animation: fade-in 0.4s;
+}
+.splash-screen::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: screen;
+  background:
+    repeating-linear-gradient(96deg, rgba(231, 201, 135, 0.04) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(6deg, rgba(125, 146, 230, 0.03) 0 2px, transparent 2px 9px);
+}
+.splash-screen::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 200px 40px rgba(0, 0, 0, 0.55);
+}
+.sp-frame { position: absolute; inset: 14px; border: 1px solid rgba(231, 201, 135, 0.34); border-radius: 12px; pointer-events: none; }
+.sp-frame::before { content: ""; position: absolute; inset: 5px; border: 1px solid rgba(231, 201, 135, 0.14); border-radius: 8px; }
+.sp-stage { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; padding: 24px; text-align: center; }
+.sp-stage::before {
+  content: ""; position: absolute; inset: -8% -14%; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 20% 28%, rgba(231, 201, 135, 0.9), transparent),
+    radial-gradient(1.6px 1.6px at 76% 16%, rgba(247, 230, 184, 0.85), transparent),
+    radial-gradient(1.4px 1.4px at 60% 72%, rgba(231, 201, 135, 0.75), transparent),
+    radial-gradient(2px 2px at 34% 86%, rgba(247, 230, 184, 0.75), transparent),
+    radial-gradient(1.4px 1.4px at 88% 58%, rgba(231, 201, 135, 0.78), transparent),
+    radial-gradient(2px 2px at 12% 60%, rgba(247, 230, 184, 0.82), transparent),
+    radial-gradient(1.4px 1.4px at 46% 20%, rgba(231, 201, 135, 0.75), transparent),
+    radial-gradient(1.6px 1.6px at 68% 40%, rgba(247, 230, 184, 0.75), transparent),
+    radial-gradient(1.4px 1.4px at 28% 50%, rgba(231, 201, 135, 0.7), transparent),
+    radial-gradient(2px 2px at 82% 80%, rgba(247, 230, 184, 0.75), transparent),
+    radial-gradient(1.4px 1.4px at 50% 92%, rgba(231, 201, 135, 0.7), transparent),
+    radial-gradient(1.6px 1.6px at 6% 38%, rgba(247, 230, 184, 0.75), transparent);
+  opacity: 0; animation: spfade 2s 1.2s forwards, spdrift 8s 1.2s ease-in-out infinite;
+}
+/* 五角形の駒エンブレム（局）＝生成りの駒に墨字 */
+.sp-emblem {
+  position: relative; width: min(30vw, 112px); height: min(33vw, 124px);
+  margin-bottom: clamp(20px, 5.5vw, 36px);
+  opacity: 0; transform: translateY(14px) scale(0.9);
+  animation: sprise 0.9s 0.1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+}
+.sp-emblem::before {
+  content: ""; position: absolute; inset: 0;
+  clip-path: polygon(41% 3%, 59% 3%, 84% 13%, 97% 100%, 3% 100%, 16% 13%);
+  background: linear-gradient(165deg, #f6ecd2, #e7d2a6 70%, #cdb074);
+  box-shadow: inset 0 0 0 2px #5c3a16, inset 0 0 0 4px rgba(231, 201, 135, 0.6), 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+.sp-emblem::after {
+  content: ""; position: absolute; inset: -72% -80%; z-index: -1; border-radius: 50%; pointer-events: none;
+  background:
+    radial-gradient(closest-side, rgba(231, 201, 135, 0.5), rgba(231, 201, 135, 0.14) 48%, transparent 70%),
+    repeating-conic-gradient(from 0deg, rgba(231, 201, 135, 0.22) 0deg 5deg, transparent 5deg 17deg);
+  -webkit-mask: radial-gradient(closest-side, #000 26%, rgba(0, 0, 0, 0.5) 52%, transparent 74%);
+          mask: radial-gradient(closest-side, #000 26%, rgba(0, 0, 0, 0.5) 52%, transparent 74%);
+  opacity: 0; animation: spfade 1.1s 0.9s forwards, sphalo 16s 1.1s linear infinite, sppulse 3.6s 1.5s ease-in-out infinite;
+}
+.sp-emblem span {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-fude); font-size: min(15vw, 56px); color: #15100a; padding-top: 8%;
+}
+/* 「大局観道場」の題字＝金色グラデで筆書きのように左から現れる（5文字なので小さめ） */
+.sp-titlewrap { position: relative; margin-top: 4px; padding-top: 6px; overflow: hidden; }
+.sp-titlewrap::after {
+  content: ""; position: absolute; top: 0; left: -45%; width: 46%; height: 100%; pointer-events: none;
+  background: linear-gradient(105deg, transparent, rgba(255, 253, 246, 0.95) 44%, rgba(231, 201, 135, 0.85) 60%, transparent);
+  mix-blend-mode: screen; filter: blur(1px); transform: skewX(-15deg);
+  animation: spgleam 3.8s 2.1s ease-in-out infinite;
+}
+.sp-word {
+  font-family: var(--font-fude); font-size: clamp(34px, 11vw, 72px); line-height: 1.04; letter-spacing: 0.02em;
+  background: linear-gradient(180deg, #fff7e6, #f0e3c4 45%, #d8c79c);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 3px 12px rgba(0, 0, 0, 0.55));
+  opacity: 0; clip-path: inset(0 100% 0 0);
+  animation: spwrite 1.1s 0.5s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+.sp-seal {
+  position: absolute; right: -4%; top: 0%; width: min(12vw, 44px); height: min(12vw, 44px);
+  border: 2.5px solid #b3271e; border-radius: 8px; color: #b3271e;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-fude); font-size: min(6vw, 24px);
+  background: rgba(248, 240, 222, 0.94); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  opacity: 0; transform: scale(1.5) rotate(8deg);
+  animation: spstamp 0.5s 1.7s cubic-bezier(0.2, 1.6, 0.4, 1) forwards;
+}
+.sp-stroke {
+  width: 0; height: min(2.4vh, 15px); margin-top: 8px; border-radius: 99px;
+  background: linear-gradient(90deg, transparent, #ff7d57, #d24a2a 60%, transparent);
+  animation: spsweep 0.7s 1.35s cubic-bezier(0.3, 0, 0.2, 1) forwards;
+}
+.sp-tag {
+  margin-top: 18px; font-family: var(--font-kaisho); font-size: clamp(16px, 4.3vw, 22px);
+  color: #f7e6b8; letter-spacing: 0.14em; font-weight: 700; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  opacity: 0; animation: spfade 0.9s 1.9s forwards;
+}
+.sp-sub {
+  margin-top: 9px; font-family: var(--font-kaisho); font-size: clamp(12px, 3.3vw, 15px);
+  color: #cdb88a; letter-spacing: 0.18em; opacity: 0; animation: spfade 0.9s 2.15s forwards;
+}
+.sp-start {
+  margin-top: 28px; font-family: var(--font-kaisho); font-weight: 800; font-size: clamp(16px, 4.4vw, 19px); letter-spacing: 0.3em;
+  cursor: pointer; color: #fff; padding: 15px 50px; border-radius: 99px; border: 1px solid #a83b22;
+  background: linear-gradient(180deg, #ff7d57 0%, #ef6238 45%, #d24a2a 100%);
+  box-shadow: 0 8px 24px rgba(210, 74, 42, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  opacity: 0; animation: spfade 0.8s 2.5s forwards; transition: transform 0.15s, filter 0.2s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.sp-start:hover { transform: translateY(-2px); filter: brightness(1.06); }
+.sp-start:active { transform: scale(0.96); }
+.sp-omoi {
+  margin-top: 14px; font-family: var(--font-kaisho); font-weight: 700; font-size: clamp(12px, 3.4vw, 14px); letter-spacing: 0.14em;
+  cursor: pointer; color: #f3e6c8; background: rgba(231, 201, 135, 0.1); border: 1px solid rgba(231, 201, 135, 0.4); border-radius: 99px; padding: 9px 24px;
+  opacity: 0; animation: spfade 0.8s 2.7s forwards; transition: transform 0.15s, background 0.2s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.sp-omoi:active { transform: scale(0.96); }
+.sp-hint { margin-top: 16px; font-size: 12px; color: #9a8a6a; letter-spacing: 0.1em; opacity: 0; animation: spfade 0.8s 2.95s forwards; }
+
+.omoi-ov {
+  position: fixed; inset: 0; z-index: 82; display: flex; align-items: center; justify-content: center; padding: 24px;
+  background: rgba(4, 6, 12, 0.72); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); animation: fade-in 0.25s;
+}
+.omoi-card {
+  position: relative; max-width: min(92vw, 520px); padding: 30px 26px 24px; border-radius: 18px; text-align: center;
+  background: radial-gradient(130% 120% at 50% 0%, #16203f, #0a0f22 72%); border: 1px solid rgba(231, 201, 135, 0.32);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(231, 201, 135, 0.14); animation: omoi-rise 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+}
+.omoi-title { font-family: var(--font-fude); color: #f7e6b8; font-size: clamp(15px, 4.2vw, 18px); letter-spacing: 0.3em; margin-bottom: 18px; }
+.omoi-lines { display: flex; flex-direction: column; align-items: center; }
+.sp-jo-line {
+  margin: 4px 0; font-family: var(--font-kaisho); font-size: clamp(13px, 3.5vw, 17px); line-height: 1.85; font-weight: 600; letter-spacing: 0.06em;
+  color: #efe2c1; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6); word-break: keep-all; overflow-wrap: break-word;
+  opacity: 0; animation: spline 0.95s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+}
+.sp-jo-line:last-child { margin-top: 16px; color: #f7e6b8; }
+.omoi-close {
+  margin-top: 24px; font-family: var(--font-kaisho); font-weight: 700; font-size: 14px; letter-spacing: 0.2em; cursor: pointer; color: #f3e6c8;
+  background: linear-gradient(180deg, rgba(231, 201, 135, 0.26), rgba(231, 201, 135, 0.06)); border: 1px solid rgba(231, 201, 135, 0.45); border-radius: 99px; padding: 10px 30px;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.omoi-close:active { transform: scale(0.96); }
+
+@keyframes sprise { to { opacity: 1; transform: none; } }
+@keyframes spwrite { to { opacity: 1; clip-path: inset(0 0 0 0); } }
+@keyframes spsweep { to { width: min(64vw, 300px); } }
+@keyframes spstamp { 0% { opacity: 0; } 60% { opacity: 1; } 100% { opacity: 1; transform: scale(1) rotate(-6deg); } }
+@keyframes spfade { to { opacity: 1; } }
+@keyframes spline { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes sphalo { to { transform: rotate(360deg); } }
+@keyframes sppulse { 0%, 100% { filter: brightness(0.92); } 50% { filter: brightness(1.18); } }
+@keyframes spgleam { 0% { left: -45%; } 10% { left: -45%; } 24% { left: 122%; } 36% { left: -45%; } 50% { left: 122%; } 100% { left: 122%; } }
+@keyframes spdrift { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes omoi-rise { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .sp-emblem::after { animation: spfade 1.1s 0.9s forwards; }
+  .sp-titlewrap::after { display: none; }
+  .sp-stage::before { animation: spfade 2s 1.2s forwards; }
+}
+
+/* ===== ② 金の光のハロー（ホームの題字の後ろで回る・暗い金）===== */
+.title-halo { position: relative; }
+.title-halo::after {
+  content: ""; position: absolute; inset: -55% -24%; z-index: -1; border-radius: 50%; pointer-events: none;
+  background:
+    radial-gradient(closest-side, rgba(231, 201, 135, 0.34), rgba(231, 201, 135, 0.1) 50%, transparent 72%),
+    repeating-conic-gradient(from 0deg, rgba(231, 201, 135, 0.14) 0deg 5deg, transparent 5deg 17deg);
+  -webkit-mask: radial-gradient(closest-side, #000 24%, rgba(0, 0, 0, 0.5) 52%, transparent 74%);
+          mask: radial-gradient(closest-side, #000 24%, rgba(0, 0, 0, 0.5) 52%, transparent 74%);
+  animation: sphalo 22s linear infinite, sppulse 4.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) { .title-halo::after { animation: none; } }
+
 /* =========================================================
    ▼▼▼ ここから下は ShogiBoard.tsx 専用（変更禁止） ▼▼▼
    ========================================================= */

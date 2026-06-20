@@ -60,3 +60,36 @@ export type UiText = (typeof STRINGS)["kana"];
 export function uiText(mode: TextMode): UiText {
   return STRINGS[mode];
 }
+
+// ===== 起動画面（スプラッシュ）の文章 =====
+// ツメル譲りの上品な起動演出（暗い藍×金）。形勢を読む目を育てる導入。
+export const SPLASH = {
+  brand: "大局観道場",
+  emblem: "局",
+  seal: "道",
+  tag: "盤上に、世界が広がる。",
+  sub: "── 形勢判断トレーニング ──",
+  start: "はじめる",
+  omoiBtn: "このアプリについて",
+  omoiTitle: "このアプリについて",
+  lines: [
+    "将棋の強さは、形勢を読む目から。",
+    "どちらが、どれだけ有利なのか。",
+    "その見立てを、AIと答え合わせ。",
+    "くりかえすほど、判断の軸が育つ。",
+    "盤上に広がる世界を、その目で。",
+  ],
+  hint: "ボタンをおして はじめよう",
+};
+
+// スプラッシュで使う文字だけをフォントに読み込むための一覧（自動で同期）
+export const SPLASH_CHARS = Array.from(
+  new Set(
+    [
+      SPLASH.brand, SPLASH.emblem, SPLASH.seal, SPLASH.tag, SPLASH.sub,
+      SPLASH.start, SPLASH.omoiBtn, SPLASH.omoiTitle, ...SPLASH.lines, SPLASH.hint,
+    ]
+      .join("")
+      .replace(/\s/g, "")
+  )
+).join("");

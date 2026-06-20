@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { SPLASH_CHARS } from "@/lib/text";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,8 +8,8 @@ export const metadata: Metadata = {
     "局面の形勢をスライダーで予測して、エンジンの評価とのズレを採点。自分の判断のクセを見つけて大局観を鍛える将棋トレーニングアプリ。",
   applicationName: "大局観道場",
   icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/icon-192.png",
+    apple: "/apple-touch-icon.png",
   },
   appleWebApp: {
     capable: true,
@@ -34,7 +35,8 @@ export const viewport: Viewport = {
 
 // 駒に使う文字だけを読み込む（軽くするため）
 const KOMA_CHARS = encodeURIComponent("歩香桂銀金角飛玉王と杏圭全馬龍");
-const FUDE_CHARS = encodeURIComponent("歩香桂銀金角飛玉王と杏圭全馬龍大局観道場たいきょくかんどう先手後手互角");
+// 筆文字は題字・落款・起動画面のロゴ／序文にも使うので、その文字も読み込む
+const FUDE_CHARS = encodeURIComponent("歩香桂銀金角飛玉王と杏圭全馬龍大局観道場たいきょくかんどう先手後手互角" + SPLASH_CHARS);
 
 export default function RootLayout({
   children,
