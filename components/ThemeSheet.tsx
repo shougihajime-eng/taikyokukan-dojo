@@ -1,9 +1,10 @@
 "use client";
 // きせかえシート（下からせり上がる）。盤の色・駒の書体・ことば（ひらがな/漢字）を選ぶ。
 // 既存の lib/settings.ts をそのまま使う（localStorage に保存・全画面で共有）。
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSettings, KOMA_STYLES, BAN_THEMES, type BanTheme, type KomaStyle } from "@/lib/settings";
 import { uiText } from "@/lib/text";
+import { haptic, hapticEnabled, setHapticEnabled } from "@/lib/haptics";
 import ShogiBoard from "@/components/ShogiBoard";
 import ShogiCore from "@/lib/shogi/core";
 
@@ -14,6 +15,8 @@ export default function ThemeSheet({ open, onClose }: { open: boolean; onClose: 
   const { settings, update } = useSettings();
   const T = uiText(settings.textMode);
   const previewState = ShogiCore.parseSfen(PREVIEW_SFEN);
+  const [hap, setHap] = useState(true); // 手のかんしょくのオン/オフ表示用
+  useEffect(() => { setHap(hapticEnabled()); }, []);
 
   // 開いている間は背面スクロールを止める
   useEffect(() => {
@@ -36,8 +39,8 @@ export default function ThemeSheet({ open, onClose }: { open: boolean; onClose: 
         className="absolute inset-0 bg-black/60 scrim-in"
       />
       <div className="sheet-up relative w-full max-w-[34rem] max-h-[88dvh] overflow-y-auto rounded-t-3xl border-t border-[var(--line-strong)] shadow-2xl px-5 pt-4 pb-[max(22px,env(safe-area-inset-bottom))]"
-        style={{ background: "linear-gradient(180deg, #131a34 0%, #0b1020 100%)" }}>
-        <div className="mx-auto mb-3 h-1.5 w-11 rounded-full bg-white/25" />
+        style={{ background: "linear-gradient(180deg, #FFFDF6 0%, #FBEDDC 100%)" }}>
+        <div className="mx-auto mb-3 h-1.5 w-11 rounded-full bg-[#463527]/25" />
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-mincho text-xl">{T.dressup}</h2>
           <button type="button" onClick={onClose} className="text-sm chip">
@@ -113,6 +116,32 @@ export default function ThemeSheet({ open, onClose }: { open: boolean; onClose: 
               {T.modeKanji}
             </button>
           </div>
+        </section>
+
+        {/* 手のかんしょく（答え合わせの手ごたえ） */}
+        <section className="mt-5">
+          <p className="label-eyebrow mb-2">手のかんしょく（答え合わせの手ごたえ）</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => { setHap(true); setHapticEnabled(true); haptic("correct"); }}
+              className={`rounded-xl border-2 py-2.5 text-sm font-bold transition ${
+                hap ? "border-[var(--shu)] bg-[var(--shu)]/8" : "border-[var(--line-strong)]"
+              }`}
+            >
+              🤚 あり
+            </button>
+            <button
+              type="button"
+              onClick={() => { setHap(false); setHapticEnabled(false); }}
+              className={`rounded-xl border-2 py-2.5 text-sm font-bold transition ${
+                !hap ? "border-[var(--shu)] bg-[var(--shu)]/8" : "border-[var(--line-strong)]"
+              }`}
+            >
+              なし
+            </button>
+          </div>
+          <p className="text-[11px] opacity-60 mt-1.5">iPhone・Androidで効きます。iPadは振動する部品が本体に無いので出ません。</p>
         </section>
       </div>
     </div>

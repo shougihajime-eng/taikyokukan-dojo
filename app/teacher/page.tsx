@@ -79,7 +79,7 @@ export default function TeacherPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="text-[var(--kin-light)] text-xs" style={{ background: "linear-gradient(180deg,#1d2748,#121a34)" }}>
+                    <tr className="text-[var(--kin-light)] text-xs" style={{ background: "linear-gradient(180deg,#F7E9CF,#F0DCB8)" }}>
                       <th className="px-3 py-3 text-left font-bold">なまえ</th>
                       <th className="px-2 py-3 text-right font-bold">けいこ</th>
                       <th className="px-2 py-3 text-right font-bold">問題数</th>

@@ -24,10 +24,10 @@ function errorRank(absError: number): {
   flash: boolean; // 画面ふちの金フラッシュ
 } {
   const pt = absError * 100;
-  if (pt <= 3) return { word: "ピタリ！", color: "#e7c987", emoji: "🎯", spark: 14, flash: true };
-  if (pt <= 10) return { word: "するどい", color: "#f7d27a", emoji: "✨", spark: 8, flash: false };
-  if (pt <= 20) return { word: "おしい", color: "#74d4a0", emoji: "🌱", spark: 0, flash: false };
-  return { word: "ズレ大", color: "#7d92e6", emoji: "🤔", spark: 0, flash: false };
+  if (pt <= 3) return { word: "ピタリ！", color: "#B8811A", emoji: "🎯", spark: 14, flash: true };
+  if (pt <= 10) return { word: "するどい", color: "#E8603C", emoji: "✨", spark: 8, flash: false };
+  if (pt <= 20) return { word: "おしい", color: "#43965F", emoji: "🌱", spark: 0, flash: false };
+  return { word: "ズレ大", color: "#3D5A96", emoji: "🤔", spark: 0, flash: false };
 }
 
 export default function ResultReveal({ guessWinrate, actualWinrate, absError, explanation, phaseTag }: Props) {
@@ -52,7 +52,7 @@ export default function ResultReveal({ guessWinrate, actualWinrate, absError, ex
         {rank.spark > 0 && <Sparkles count={rank.spark} spread={rank.flash ? 84 : 58} color={rank.color} />}
         <span
           className="font-fude text-[2.6rem] leading-none pop-num"
-          style={{ color: rank.color, textShadow: `0 0 22px ${rank.color}66` }}
+          style={{ color: rank.color, textShadow: `0 1px 18px ${rank.color}40` }}
         >
           {rank.emoji} {rank.word}
         </span>

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "大局観",
   },
   openGraph: {
@@ -30,7 +30,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   // ピンチ拡大は禁止しない（弱視の方・小さい字を読みたい方のため）
   viewportFit: "cover", // iPhone のノッチ・ホームバー領域まで使う
-  themeColor: "#0a0f20",
+  themeColor: "#FBEDDC",
 };
 
 // 駒に使う文字だけを読み込む（軽くするため）
@@ -48,12 +48,12 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* 本文の書体: 凛とした和ゴシック（Zen Kaku Gothic New） */}
+        {/* 見出し: 絵本のような飾り明朝（Kaisei Decol＝共通デザインシステム） */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@500;700&display=swap"
           rel="stylesheet"
         />
-        {/* 見出し: しっぽり明朝 */}
+        {/* 駒の字・題字: しっぽり明朝 */}
         <link
           href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&display=swap"
           rel="stylesheet"
@@ -68,8 +68,9 @@ export default function RootLayout({
           href={`https://fonts.googleapis.com/css2?family=DotGothic16&text=${KOMA_CHARS}&display=swap`}
           rel="stylesheet"
         />
+        {/* 本文の書体: 丸ゴシック（Zen Maru Gothic＝安心のやわらかさ） */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap"
           rel="stylesheet"
         />
       </head>

@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
 /* =========================================================
-   大局観道場 — デザインシステム「天・大局」
-   コンセプト: 盤上に広がる世界。深い藍の宇宙＋暁（夜明け）の地平の光。
-              金（きん）と朱（しゅ）を灯りに、盤は舞台のように光らせる。
-   方針: 高級・上品・世界観。明朝の題字＋凛とした和ゴシック本文。
+   大局観道場 — 共通デザインシステム「朝焼けの和紙」（Fable5・2026-07）
+   コンセプト: 夜明けの盤上。あたたかい和紙の空に、瑠璃・柿・山吹の灯り。
+              駒文字タイトル（五角形の駒に一文字ずつ）＋朱の落款が signature。
+   方針: 高級・上品・やさしい。飾り明朝の見出し＋丸ゴシック本文＋駒はしっぽり明朝。
          iPhone/iPad のセーフエリアと縦横どちらにも最適化。
+   ⚠ 旧変数名（--sumi/--shu/--kin…）は var() で新パレットに橋わたし＝既存クラスを壊さない。
    ⚠ ファイル末尾「▼ ShogiBoard.tsx 専用（変更禁止）▼」より下は触らないこと。
       keisei-* / bias-* / 各アニメーションのクラス名は他コンポーネントが依存するため維持する。
    ========================================================= */
@@ -13,38 +14,56 @@
 :root {
   /* ── 書体 ── */
   --font-kaisho: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+  --font-kazari: "Kaisei Decol", "Zen Maru Gothic", "Yu Mincho", serif; /* 見出し＝絵本のような飾り明朝 */
   --font-fude: "Yuji Syuku", "Yu Mincho", serif;
   --font-maru: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
-  --font-gothic: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  --font-gothic: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif; /* 本文＝丸ゴシック（安心） */
   --font-dot: "DotGothic16", monospace;
   --font-koma: var(--font-kaisho);
 
-  /* ── 基調色（天のテーマ）── */
-  --sumi: #f3ecda;        /* 本文（暁にうかぶ生成り） */
-  --sumi-soft: #a9a890c2; /* 副文（やわらかい月明かり色） */
-  --shu: #f2683f;         /* 朱（灯り・先手・行動） */
-  --shu-deep: #d24a2a;
-  --shu-bright: #ff7d57;
-  --kin: #e7c987;         /* 金（主アクセント） */
-  --kin-light: #f7e6b8;
-  --kin-deep: #b48b48;
-  --ai: #7d92e6;          /* 藍（後手・冷側・星明かり） */
-  --ok: #74d4a0;          /* 好手の緑 */
-  --paper: rgba(20, 28, 54, 0.55);   /* 内側の小パネル（ガラス） */
+  /* ── 基調色（共通デザインシステムの名前つきパレット）── */
+  --asagi-sky: #FBEDDC;  /* 朝焼けの和紙＝地色 */
+  --sky-deep: #F5DEC2;
+  --ink: #463527;        /* 焙じ茶の墨＝本文 */
+  --ink2: #947B62;       /* うすい墨＝説明文 */
+  --ruri: #3D5A96;       /* 瑠璃＝見出し・案内 */
+  --ruri-l: #6383BC;
+  --kaki: #E8603C;       /* 柿＝主アクセント（あそび・行動） */
+  --kaki-d: #C7492B;
+  --wakaba: #43965F;     /* 若葉＝すすむ・せいかい */
+  --yamabuki: #DD9C2B;   /* 山吹＝ごほうび */
+  --kaya: #E2B377;  --kaya-d: #9C6E2E;  /* 榧＝盤の木 */
+  --koma-men: #F6E8C6;   /* 駒のクリーム */
+  --card: #FFFDF6;
+  --sh: 0 10px 28px rgba(150, 90, 40, 0.14);
+  --sh-l: 0 18px 46px rgba(150, 90, 40, 0.22);
 
-  /* 宇宙の地（背景レイヤー用） */
-  --bg-0: #05070f;
-  --bg-1: #0a0f1f;
-  --bg-2: #121a36;
+  /* ── 旧名 → 新色の橋わたし（既存クラス・画面を壊さず色だけ新しく）── */
+  --sumi: var(--ink);          /* 本文 */
+  --sumi-soft: var(--ink2);    /* 副文 */
+  --shu: var(--kaki);          /* 朱（灯り・先手・行動） */
+  --shu-deep: var(--kaki-d);
+  --shu-bright: #D4502E;       /* 明るい地でも読める朱 */
+  --kin: #A67117;              /* 金＝明るい和紙でも読める深い金 */
+  --kin-light: #8F6212;        /* 強調文字（明るい背景では濃い金が正解） */
+  --kin-deep: #7C540F;
+  --ai: var(--ruri);           /* 藍（後手・冷側） */
+  --ok: var(--wakaba);         /* 好手の緑 */
+  --paper: rgba(246, 232, 198, 0.5);   /* 内側の小パネル（和紙） */
 
-  /* ガラスのカード */
-  --glass: rgba(22, 30, 58, 0.62);
-  --glass-2: rgba(15, 21, 44, 0.66);
-  --glass-border: rgba(231, 201, 135, 0.18);
+  /* あさの空の地（背景レイヤー用） */
+  --bg-0: #FBEDDC;
+  --bg-1: #F5DEC2;
+  --bg-2: #FFF7EA;
+
+  /* 白いカード */
+  --glass: rgba(255, 253, 246, 0.92);
+  --glass-2: rgba(252, 243, 229, 0.9);
+  --glass-border: rgba(150, 90, 40, 0.18);
 
   /* 罫・縁 */
-  --line: rgba(231, 201, 135, 0.16);
-  --line-strong: rgba(231, 201, 135, 0.34);
+  --line: rgba(150, 90, 40, 0.16);
+  --line-strong: rgba(150, 90, 40, 0.32);
 
   /* セーフエリア（iPhoneのノッチ・ホームバー） */
   --sat: env(safe-area-inset-top);
@@ -71,8 +90,8 @@ body {
   isolation: isolate;
 }
 
-/* ── 背景＝広がる世界（固定レイヤー・スクロールで再描画しない）── */
-/* 星空＋星雲 */
+/* ── 背景＝朝焼けの和紙（固定レイヤー・スクロールで再描画しない）── */
+/* あさの空のたまり＋金粉（和紙の繊維のように） */
 body::before {
   content: "";
   position: fixed;
@@ -80,18 +99,18 @@ body::before {
   z-index: -2;
   background-color: var(--bg-0);
   background-image:
-    /* 星雲（やわらかい色のたまり） */
-    radial-gradient(40% 32% at 16% 8%, rgba(86, 74, 168, 0.30) 0%, transparent 70%),
-    radial-gradient(46% 38% at 88% 14%, rgba(40, 96, 130, 0.26) 0%, transparent 72%),
-    radial-gradient(60% 40% at 50% 116%, rgba(231, 170, 96, 0.20) 0%, transparent 70%),
-    /* 星（3層・タイル間隔をずらして格子感を消す） */
-    radial-gradient(1.4px 1.4px at 38px 22px, rgba(255, 255, 255, 0.85), transparent 60%),
-    radial-gradient(1.2px 1.2px at 160px 120px, rgba(255, 252, 240, 0.7), transparent 60%),
-    radial-gradient(1.6px 1.6px at 250px 60px, rgba(231, 201, 135, 0.8), transparent 60%),
-    radial-gradient(1px 1px at 90px 200px, rgba(255, 255, 255, 0.55), transparent 60%),
-    radial-gradient(1.2px 1.2px at 320px 260px, rgba(180, 200, 255, 0.6), transparent 60%),
-    /* 地（深い藍のグラデ） */
-    linear-gradient(180deg, #05070f 0%, #0a0f20 42%, #101937 100%);
+    /* 空の色のたまり（瑠璃・山吹・柿） */
+    radial-gradient(40% 32% at 16% 8%, rgba(99, 131, 188, 0.12) 0%, transparent 70%),
+    radial-gradient(46% 38% at 88% 14%, rgba(221, 156, 43, 0.10) 0%, transparent 72%),
+    radial-gradient(60% 40% at 50% 116%, rgba(232, 96, 60, 0.13) 0%, transparent 70%),
+    /* 金粉・和紙の繊維（3層・タイル間隔をずらして格子感を消す） */
+    radial-gradient(1.4px 1.4px at 38px 22px, rgba(156, 110, 46, 0.22), transparent 60%),
+    radial-gradient(1.2px 1.2px at 160px 120px, rgba(199, 73, 43, 0.14), transparent 60%),
+    radial-gradient(1.6px 1.6px at 250px 60px, rgba(166, 113, 23, 0.24), transparent 60%),
+    radial-gradient(1px 1px at 90px 200px, rgba(70, 53, 39, 0.12), transparent 60%),
+    radial-gradient(1.2px 1.2px at 320px 260px, rgba(61, 90, 150, 0.14), transparent 60%),
+    /* 地（あたたかい和紙のグラデ） */
+    linear-gradient(180deg, #FFF7EA 0%, #FBEDDC 42%, #F5DEC2 100%);
   background-size:
     auto, auto, auto,
     360px 360px, 430px 430px, 290px 290px, 380px 380px, 510px 510px,
@@ -99,7 +118,7 @@ body::before {
   background-repeat: repeat;
   animation: drift 90s linear infinite alternate;
 }
-/* 暁の地平（下からの暖かい光）＋上下のしまり */
+/* 暁の地平（下からの柿色の光）＋上のやわらかい明かり */
 body::after {
   content: "";
   position: fixed;
@@ -107,9 +126,9 @@ body::after {
   z-index: -1;
   pointer-events: none;
   background-image:
-    radial-gradient(120% 60% at 50% 122%, rgba(247, 196, 120, 0.16) 0%, rgba(247, 196, 120, 0.05) 36%, transparent 60%),
-    radial-gradient(100% 70% at 50% -20%, rgba(0, 0, 0, 0.35) 0%, transparent 55%),
-    linear-gradient(180deg, rgba(5, 7, 15, 0.25) 0%, transparent 22%, transparent 78%, rgba(5, 7, 15, 0.4) 100%);
+    radial-gradient(120% 60% at 50% 122%, rgba(232, 96, 60, 0.10) 0%, rgba(232, 96, 60, 0.03) 36%, transparent 60%),
+    radial-gradient(100% 70% at 50% -20%, rgba(255, 255, 255, 0.55) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(255, 247, 234, 0.5) 0%, transparent 22%, transparent 78%, rgba(226, 179, 119, 0.22) 100%);
 }
 
 @keyframes drift {
@@ -120,7 +139,7 @@ body::after {
 /* 見出し系 */
 .font-fude { font-family: var(--font-fude); }
 .font-maru { font-family: var(--font-maru); }
-.font-mincho { font-family: var(--font-kaisho); font-weight: 700; }
+.font-mincho { font-family: var(--font-kazari); font-weight: 700; }
 .tnum { font-variant-numeric: tabular-nums; }
 
 /* =========================================================
@@ -146,7 +165,7 @@ body::after {
   top: 0;
   z-index: 30;
   padding-top: var(--sat);
-  background: linear-gradient(180deg, rgba(8, 12, 26, 0.86) 0%, rgba(8, 12, 26, 0.5) 100%);
+  background: linear-gradient(180deg, rgba(251, 237, 220, 0.92) 0%, rgba(251, 237, 220, 0.66) 100%);
   backdrop-filter: blur(14px) saturate(1.15);
   -webkit-backdrop-filter: blur(14px) saturate(1.15);
   border-bottom: 1px solid var(--line);
@@ -163,7 +182,7 @@ body::after {
 }
 
 /* =========================================================
-   カード（夜空にうかぶガラスの札）
+   カード（朝の和紙にうかぶ白い札）
    ========================================================= */
 .card {
   position: relative;
@@ -172,10 +191,9 @@ body::after {
     linear-gradient(180deg, var(--glass) 0%, var(--glass-2) 100%);
   border: 1px solid var(--glass-border);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    inset 0 0 30px rgba(125, 146, 230, 0.05),
-    0 1px 1px rgba(0, 0, 0, 0.3),
-    0 26px 50px -26px rgba(0, 0, 0, 0.75);
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 1px rgba(150, 90, 40, 0.06),
+    var(--sh);
   backdrop-filter: blur(12px) saturate(1.05);
   -webkit-backdrop-filter: blur(12px) saturate(1.05);
 }
@@ -184,13 +202,13 @@ body::after {
   border-color: transparent;
   background:
     linear-gradient(180deg, var(--glass) 0%, var(--glass-2) 100%) padding-box,
-    linear-gradient(150deg, var(--kin-light), var(--kin) 42%, var(--kin-deep) 100%) border-box;
+    linear-gradient(150deg, #E7C061, var(--yamabuki) 42%, var(--kaya-d) 100%) border-box;
   border: 1.5px solid transparent;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 40px rgba(231, 201, 135, 0.08),
-    0 26px 56px -26px rgba(0, 0, 0, 0.8),
-    0 0 40px -16px rgba(231, 201, 135, 0.3);
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 40px rgba(221, 156, 43, 0.06),
+    var(--sh-l),
+    0 0 40px -16px rgba(221, 156, 43, 0.25);
 }
 .card-pad { padding: clamp(16px, 4.5vw, 24px); }
 
@@ -199,7 +217,7 @@ body::after {
   font-size: 11px;
   letter-spacing: 0.2em;
   font-weight: 700;
-  color: var(--kin);
+  color: var(--ruri);
 }
 
 /* =========================================================
@@ -242,32 +260,33 @@ body::after {
 @keyframes btn-sheen { from { background-position: 180% 0; } to { background-position: -80% 0; } }
 
 .btn-shu {
-  color: #fff4ec;
-  background: linear-gradient(180deg, #ff7d57 0%, #f2683f 48%, #d24a2a 100%);
+  color: #FFF6EE;
+  background: linear-gradient(180deg, #F07A50 0%, #E8603C 48%, #C7492B 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -2px 8px rgba(150, 40, 18, 0.55),
-    0 12px 26px -10px rgba(242, 104, 63, 0.6),
-    0 0 26px -8px rgba(242, 104, 63, 0.55);
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 8px rgba(150, 40, 18, 0.4),
+    0 12px 26px -10px rgba(232, 96, 60, 0.5),
+    0 0 26px -10px rgba(232, 96, 60, 0.35);
 }
-.btn-shu:not(:disabled):hover { filter: brightness(1.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 8px rgba(150,40,18,0.55), 0 14px 30px -8px rgba(242,104,63,0.7), 0 0 38px -6px rgba(242,104,63,0.7); }
+.btn-shu:not(:disabled):hover { filter: brightness(1.05); box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -2px 8px rgba(150,40,18,0.4), 0 14px 30px -8px rgba(232,96,60,0.55), 0 0 38px -8px rgba(232,96,60,0.45); }
 
 .btn-sumi {
-  color: var(--kin-light);
-  background: linear-gradient(180deg, #1d2748 0%, #121a34 100%);
-  border: 1px solid var(--line-strong);
+  color: #FFF9EC;
+  background: linear-gradient(180deg, #6383BC 0%, #3D5A96 100%);
+  border: 1px solid rgba(43, 64, 110, 0.55);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 12px 26px -14px rgba(0, 0, 0, 0.8);
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -2px 8px rgba(28, 44, 82, 0.4),
+    0 12px 26px -12px rgba(61, 90, 150, 0.55);
 }
-.btn-sumi:not(:disabled):hover { box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 30px -12px rgba(0,0,0,0.85), 0 0 26px -10px rgba(231,201,135,0.3); }
+.btn-sumi:not(:disabled):hover { filter: brightness(1.05); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -2px 8px rgba(28,44,82,0.4), 0 14px 30px -10px rgba(61,90,150,0.6); }
 
 .btn-ghost {
-  color: var(--sumi);
-  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink);
+  background: var(--card);
   border: 1.5px solid var(--line-strong);
 }
-.btn-ghost:not(:disabled):hover { background: rgba(255, 255, 255, 0.08); border-color: var(--kin); }
+.btn-ghost:not(:disabled):hover { background: #FFF7E8; border-color: var(--kaki); }
 
 /* =========================================================
    入力欄（フォーム）
@@ -276,15 +295,15 @@ body::after {
   width: 100%;
   border-radius: 14px;
   border: 1.5px solid var(--line-strong);
-  background: rgba(8, 12, 26, 0.55);
-  color: var(--sumi);
+  background: var(--card);
+  color: var(--ink);
   padding: 12px 14px;
   font-size: 16px; /* iOS の自動ズームを防ぐ */
   outline: none;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
-.input::placeholder { color: rgba(169, 168, 144, 0.6); }
-.input:focus { border-color: var(--kin); box-shadow: 0 0 0 3px rgba(231, 201, 135, 0.18); }
+.input::placeholder { color: rgba(148, 123, 98, 0.75); }
+.input:focus { border-color: var(--kaki); box-shadow: 0 0 0 3px rgba(232, 96, 60, 0.16); }
 
 /* 落款（らっかん）風の朱印 */
 .hanko {
@@ -302,10 +321,10 @@ body::after {
   box-shadow: 0 2px 8px rgba(242, 104, 63, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
-/* 縦書きの題字 */
+/* 縦書きの題字（いまは未使用）。⚠text-orientation:upright はSafariで文字順が
+   逆さまになるバグがあるため外した（日本語は upright 無しでも縦に立つ）。2026-07-12 */
 .tate {
   writing-mode: vertical-rl;
-  text-orientation: upright;
   letter-spacing: 0.1em;
 }
 
@@ -318,20 +337,20 @@ body::after {
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--sumi);
+  color: var(--ink);
   border: 1px solid var(--line-strong);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 253, 246, 0.8);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   white-space: nowrap;
   transition: border-color 0.18s ease, background 0.18s ease, transform 0.12s ease;
 }
 button.chip:active { transform: scale(0.95); }
-button.chip:hover { border-color: var(--kin); }
+button.chip:hover { border-color: var(--kaki); }
 .chip-fill {
-  background: linear-gradient(180deg, #243056, #161e3a);
-  color: var(--kin-light);
-  border-color: var(--line-strong);
+  background: linear-gradient(180deg, #6383BC, #3D5A96);
+  color: #FFF9EC;
+  border-color: rgba(43, 64, 110, 0.5);
 }
 
 /* 区切りの罫（金の細線） */
@@ -353,7 +372,7 @@ button.chip:hover { border-color: var(--kin); }
   inset: -7% -7% -9% -7%;
   z-index: -1;
   border-radius: 28px;
-  background: radial-gradient(60% 55% at 50% 42%, rgba(231, 201, 135, 0.22), transparent 72%);
+  background: radial-gradient(60% 55% at 50% 42%, rgba(221, 156, 43, 0.20), transparent 72%);
   filter: blur(8px);
   pointer-events: none;
 }
@@ -404,7 +423,7 @@ button.chip:hover { border-color: var(--kin); }
   .play-side > .card { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
   .play-side > .btn { flex: 0 0 auto; }
   /* 出題中の「形勢を判定する」ボタンはカード下にくっついて いつも見える */
-  .play-side > .card > .btn { position: sticky; bottom: 0; z-index: 3; box-shadow: 0 -10px 16px -6px rgba(8,10,26,0.85); }
+  .play-side > .card > .btn { position: sticky; bottom: 0; z-index: 3; box-shadow: 0 -10px 16px -6px rgba(255,253,246,0.95); }
 }
 
 /* =========================================================
@@ -412,11 +431,11 @@ button.chip:hover { border-color: var(--kin); }
    ========================================================= */
 .keisei-track {
   background: linear-gradient(90deg,
-    #2b3566 0%, #5a64a0 26%, #c9c4d8 46%, #efe6d3 50%, #f0c2a6 54%, #ef6f4d 74%, #e8492a 100%);
+    #3D5A96 0%, #6383BC 26%, #C9D2E4 46%, #F6EDDC 50%, #F3C4A8 54%, #E8603C 74%, #C7492B 100%);
   box-shadow:
-    inset 0 1px 3px rgba(0, 0, 0, 0.45),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.2),
-    0 0 18px -6px rgba(231, 201, 135, 0.35);
+    inset 0 1px 3px rgba(70, 53, 39, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.45),
+    0 0 18px -6px rgba(221, 156, 43, 0.3);
 }
 .keisei-mid {
   position: absolute;
@@ -424,7 +443,7 @@ button.chip:hover { border-color: var(--kin); }
   top: -3px;
   bottom: -3px;
   width: 2px;
-  background: rgba(10, 14, 28, 0.5);
+  background: rgba(70, 53, 39, 0.4);
   transform: translateX(-50%);
 }
 
@@ -445,19 +464,19 @@ button.chip:hover { border-color: var(--kin); }
   height: 40px;
   border-radius: 50%;
   background: radial-gradient(circle at 38% 30%, #fffefb 0%, #f6ead0 52%, #e2c690 100%);
-  border: 2px solid #0a0e1c;
+  border: 2px solid #5C4326;
   box-shadow:
-    0 3px 10px rgba(0, 0, 0, 0.5),
-    0 0 0 4px rgba(231, 201, 135, 0.35),
-    0 0 18px rgba(231, 201, 135, 0.6),
+    0 3px 10px rgba(120, 70, 20, 0.4),
+    0 0 0 4px rgba(221, 156, 43, 0.3),
+    0 0 18px rgba(221, 156, 43, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
   transition: box-shadow 0.18s ease, transform 0.1s ease;
 }
 .keisei-slider:active::-webkit-slider-thumb {
   box-shadow:
-    0 3px 12px rgba(0, 0, 0, 0.55),
-    0 0 0 6px rgba(231, 201, 135, 0.45),
-    0 0 28px rgba(231, 201, 135, 0.85),
+    0 3px 12px rgba(120, 70, 20, 0.45),
+    0 0 0 6px rgba(221, 156, 43, 0.4),
+    0 0 28px rgba(221, 156, 43, 0.7),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 .keisei-slider::-moz-range-thumb {
@@ -465,8 +484,8 @@ button.chip:hover { border-color: var(--kin); }
   height: 40px;
   border-radius: 50%;
   background: radial-gradient(circle at 38% 30%, #fffefb 0%, #f6ead0 52%, #e2c690 100%);
-  border: 2px solid #0a0e1c;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(231, 201, 135, 0.35), 0 0 18px rgba(231, 201, 135, 0.6);
+  border: 2px solid #5C4326;
+  box-shadow: 0 3px 10px rgba(120, 70, 20, 0.4), 0 0 0 4px rgba(221, 156, 43, 0.3), 0 0 18px rgba(221, 156, 43, 0.5);
 }
 .keisei-slider:disabled::-webkit-slider-thumb { opacity: 0.5; box-shadow: none; }
 .keisei-slider:disabled::-moz-range-thumb { opacity: 0.5; box-shadow: none; }
@@ -476,13 +495,13 @@ button.chip:hover { border-color: var(--kin); }
   width: 0; height: 0;
   border-inline: 7px solid transparent;
   border-top: 12px solid var(--kin-light);
-  filter: drop-shadow(0 0 4px rgba(231, 201, 135, 0.8));
+  filter: drop-shadow(0 0 4px rgba(221, 156, 43, 0.65));
 }
 .needle-ai {
   width: 0; height: 0;
   border-inline: 7px solid transparent;
   border-bottom: 12px solid var(--shu);
-  filter: drop-shadow(0 0 4px rgba(242, 104, 63, 0.8));
+  filter: drop-shadow(0 0 4px rgba(232, 96, 60, 0.6));
 }
 
 /* =========================================================
@@ -492,16 +511,16 @@ button.chip:hover { border-color: var(--kin); }
   position: relative;
   height: 22px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(70, 53, 39, 0.08);
   overflow: hidden;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 2px rgba(150, 90, 40, 0.25);
 }
 .bias-mid {
   position: absolute;
   left: 50%;
   top: 0; bottom: 0;
   width: 1.5px;
-  background: rgba(231, 201, 135, 0.4);
+  background: rgba(150, 90, 40, 0.45);
   transform: translateX(-50%);
 }
 
@@ -521,7 +540,7 @@ button.chip:hover { border-color: var(--kin); }
   z-index: 5;
   border-radius: 24px;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 45%, rgba(231, 201, 135, 0.55), transparent 60%);
+  background: radial-gradient(circle at 50% 45%, rgba(221, 156, 43, 0.5), transparent 60%);
   opacity: 0;
   animation: judge-burst 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
@@ -537,7 +556,7 @@ button.chip:hover { border-color: var(--kin); }
   width: 7px; height: 7px;
   margin: -3.5px;
   border-radius: 9999px;
-  background: radial-gradient(circle, #fff 0%, var(--kin) 45%, transparent 72%);
+  background: radial-gradient(circle, #FFF2CF 0%, var(--yamabuki) 45%, transparent 72%);
   opacity: 0;
   animation: spark-fly 0.95s cubic-bezier(0.15, 0.7, 0.25, 1) both;
 }
@@ -552,7 +571,7 @@ button.chip:hover { border-color: var(--kin); }
   inset: 0;
   z-index: 60;
   pointer-events: none;
-  box-shadow: inset 0 0 120px 10px rgba(231, 201, 135, 0.5);
+  box-shadow: inset 0 0 120px 10px rgba(221, 156, 43, 0.45);
   opacity: 0;
   animation: edge-flash 0.9s ease both;
 }
@@ -593,7 +612,7 @@ button.chip:hover { border-color: var(--kin); }
 
 @keyframes sheen { 0% { background-position: -120% 0; } 100% { background-position: 220% 0; } }
 .gold-sheen {
-  background: linear-gradient(110deg, var(--kin-deep) 0%, var(--kin) 38%, #fff3d6 50%, var(--kin) 62%, var(--kin-deep) 100%);
+  background: linear-gradient(110deg, var(--kin-deep) 0%, var(--kin) 38%, var(--yamabuki) 50%, var(--kin) 62%, var(--kin-deep) 100%);
   background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -614,46 +633,46 @@ button.chip:hover { border-color: var(--kin); }
 }
 
 /* ============================================================
-   ツメル譲りの高級演出（暗い藍×金バージョン）2026-06-20 移植
+   ツメル譲りの高級演出（朝焼けの和紙×金バージョン）
    ① 起動画面（スプラッシュ）＝筆ロゴが書かれる＋金粉＋落款
    ② 金の光のハロー（題字の後ろ）
    ============================================================ */
 
-/* ===== ① 起動画面（スプラッシュ・暗い金）===== */
+/* ===== ① 起動画面（スプラッシュ・朝の金）===== */
 .splash-screen {
   position: fixed; inset: 0; z-index: 70;
   display: flex; align-items: center; justify-content: center; overflow: hidden;
-  background: radial-gradient(120% 90% at 50% 8%, #121a36 0%, #0a0f1f 48%, #05070f 100%);
+  background: radial-gradient(120% 90% at 50% 8%, #FFF7EA 0%, #FBEDDC 48%, #F5DEC2 100%);
   animation: fade-in 0.4s;
 }
 .splash-screen::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: screen;
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.4; mix-blend-mode: multiply;
   background:
-    repeating-linear-gradient(96deg, rgba(231, 201, 135, 0.04) 0 2px, transparent 2px 7px),
-    repeating-linear-gradient(6deg, rgba(125, 146, 230, 0.03) 0 2px, transparent 2px 9px);
+    repeating-linear-gradient(96deg, rgba(156, 110, 46, 0.05) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(6deg, rgba(61, 90, 150, 0.03) 0 2px, transparent 2px 9px);
 }
 .splash-screen::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
-  box-shadow: inset 0 0 200px 40px rgba(0, 0, 0, 0.55);
+  box-shadow: inset 0 0 200px 40px rgba(150, 90, 40, 0.12);
 }
-.sp-frame { position: absolute; inset: 14px; border: 1px solid rgba(231, 201, 135, 0.34); border-radius: 12px; pointer-events: none; }
-.sp-frame::before { content: ""; position: absolute; inset: 5px; border: 1px solid rgba(231, 201, 135, 0.14); border-radius: 8px; }
+.sp-frame { position: absolute; inset: 14px; border: 1px solid rgba(156, 110, 46, 0.42); border-radius: 12px; pointer-events: none; }
+.sp-frame::before { content: ""; position: absolute; inset: 5px; border: 1px solid rgba(156, 110, 46, 0.18); border-radius: 8px; }
 .sp-stage { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; padding: 24px; text-align: center; }
 .sp-stage::before {
   content: ""; position: absolute; inset: -8% -14%; z-index: 0; pointer-events: none;
   background-image:
-    radial-gradient(2px 2px at 20% 28%, rgba(231, 201, 135, 0.9), transparent),
-    radial-gradient(1.6px 1.6px at 76% 16%, rgba(247, 230, 184, 0.85), transparent),
-    radial-gradient(1.4px 1.4px at 60% 72%, rgba(231, 201, 135, 0.75), transparent),
-    radial-gradient(2px 2px at 34% 86%, rgba(247, 230, 184, 0.75), transparent),
-    radial-gradient(1.4px 1.4px at 88% 58%, rgba(231, 201, 135, 0.78), transparent),
-    radial-gradient(2px 2px at 12% 60%, rgba(247, 230, 184, 0.82), transparent),
-    radial-gradient(1.4px 1.4px at 46% 20%, rgba(231, 201, 135, 0.75), transparent),
-    radial-gradient(1.6px 1.6px at 68% 40%, rgba(247, 230, 184, 0.75), transparent),
-    radial-gradient(1.4px 1.4px at 28% 50%, rgba(231, 201, 135, 0.7), transparent),
-    radial-gradient(2px 2px at 82% 80%, rgba(247, 230, 184, 0.75), transparent),
-    radial-gradient(1.4px 1.4px at 50% 92%, rgba(231, 201, 135, 0.7), transparent),
-    radial-gradient(1.6px 1.6px at 6% 38%, rgba(247, 230, 184, 0.75), transparent);
+    radial-gradient(2px 2px at 20% 28%, rgba(166, 113, 23, 0.85), transparent),
+    radial-gradient(1.6px 1.6px at 76% 16%, rgba(221, 156, 43, 0.8), transparent),
+    radial-gradient(1.4px 1.4px at 60% 72%, rgba(166, 113, 23, 0.7), transparent),
+    radial-gradient(2px 2px at 34% 86%, rgba(221, 156, 43, 0.7), transparent),
+    radial-gradient(1.4px 1.4px at 88% 58%, rgba(166, 113, 23, 0.72), transparent),
+    radial-gradient(2px 2px at 12% 60%, rgba(221, 156, 43, 0.76), transparent),
+    radial-gradient(1.4px 1.4px at 46% 20%, rgba(166, 113, 23, 0.7), transparent),
+    radial-gradient(1.6px 1.6px at 68% 40%, rgba(221, 156, 43, 0.7), transparent),
+    radial-gradient(1.4px 1.4px at 28% 50%, rgba(166, 113, 23, 0.65), transparent),
+    radial-gradient(2px 2px at 82% 80%, rgba(221, 156, 43, 0.7), transparent),
+    radial-gradient(1.4px 1.4px at 50% 92%, rgba(166, 113, 23, 0.65), transparent),
+    radial-gradient(1.6px 1.6px at 6% 38%, rgba(221, 156, 43, 0.7), transparent);
   opacity: 0; animation: spfade 2s 1.2s forwards, spdrift 8s 1.2s ease-in-out infinite;
 }
 /* 五角形の駒エンブレム（局）＝生成りの駒に墨字 */
@@ -667,13 +686,13 @@ button.chip:hover { border-color: var(--kin); }
   content: ""; position: absolute; inset: 0;
   clip-path: polygon(41% 3%, 59% 3%, 84% 13%, 97% 100%, 3% 100%, 16% 13%);
   background: linear-gradient(165deg, #f6ecd2, #e7d2a6 70%, #cdb074);
-  box-shadow: inset 0 0 0 2px #5c3a16, inset 0 0 0 4px rgba(231, 201, 135, 0.6), 0 12px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 0 2px #5c3a16, inset 0 0 0 4px rgba(221, 156, 43, 0.5), 0 12px 30px rgba(120, 70, 20, 0.35);
 }
 .sp-emblem::after {
   content: ""; position: absolute; inset: -72% -80%; z-index: -1; border-radius: 50%; pointer-events: none;
   background:
-    radial-gradient(closest-side, rgba(231, 201, 135, 0.5), rgba(231, 201, 135, 0.14) 48%, transparent 70%),
-    repeating-conic-gradient(from 0deg, rgba(231, 201, 135, 0.22) 0deg 5deg, transparent 5deg 17deg);
+    radial-gradient(closest-side, rgba(221, 156, 43, 0.4), rgba(221, 156, 43, 0.12) 48%, transparent 70%),
+    repeating-conic-gradient(from 0deg, rgba(221, 156, 43, 0.18) 0deg 5deg, transparent 5deg 17deg);
   -webkit-mask: radial-gradient(closest-side, #000 26%, rgba(0, 0, 0, 0.5) 52%, transparent 74%);
           mask: radial-gradient(closest-side, #000 26%, rgba(0, 0, 0, 0.5) 52%, transparent 74%);
   opacity: 0; animation: spfade 1.1s 0.9s forwards, sphalo 16s 1.1s linear infinite, sppulse 3.6s 1.5s ease-in-out infinite;
@@ -682,84 +701,85 @@ button.chip:hover { border-color: var(--kin); }
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   font-family: var(--font-fude); font-size: min(15vw, 56px); color: #15100a; padding-top: 8%;
 }
-/* 「大局観道場」の題字＝金色グラデで筆書きのように左から現れる（5文字なので小さめ） */
-.sp-titlewrap { position: relative; margin-top: 4px; padding-top: 6px; overflow: hidden; }
+/* 「大局観道場」の題字＝金色グラデで筆書きのように左から現れる（5文字なので小さめ）
+   右に落款ぶんの余白を取り、朱印が最後の字に重ならないようにする */
+.sp-titlewrap { position: relative; margin-top: 4px; padding-top: 6px; padding-right: calc(min(12vw, 44px) + 8px); overflow: hidden; }
 .sp-titlewrap::after {
   content: ""; position: absolute; top: 0; left: -45%; width: 46%; height: 100%; pointer-events: none;
-  background: linear-gradient(105deg, transparent, rgba(255, 253, 246, 0.95) 44%, rgba(231, 201, 135, 0.85) 60%, transparent);
+  background: linear-gradient(105deg, transparent, rgba(255, 253, 246, 0.9) 44%, rgba(255, 236, 190, 0.8) 60%, transparent);
   mix-blend-mode: screen; filter: blur(1px); transform: skewX(-15deg);
   animation: spgleam 3.8s 2.1s ease-in-out infinite;
 }
 .sp-word {
   font-family: var(--font-fude); font-size: clamp(34px, 11vw, 72px); line-height: 1.04; letter-spacing: 0.02em;
-  background: linear-gradient(180deg, #fff7e6, #f0e3c4 45%, #d8c79c);
+  background: linear-gradient(180deg, #8A6A1F, #A67117 45%, #6B4E17);
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
-  filter: drop-shadow(0 3px 12px rgba(0, 0, 0, 0.55));
+  filter: drop-shadow(0 3px 10px rgba(150, 90, 40, 0.3));
   opacity: 0; clip-path: inset(0 100% 0 0);
   animation: spwrite 1.1s 0.5s cubic-bezier(0.5, 0, 0.2, 1) forwards;
 }
 .sp-seal {
-  position: absolute; right: -4%; top: 0%; width: min(12vw, 44px); height: min(12vw, 44px);
+  position: absolute; right: 0; top: 0%; width: min(12vw, 44px); height: min(12vw, 44px);
   border: 2.5px solid #b3271e; border-radius: 8px; color: #b3271e;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-fude); font-size: min(6vw, 24px);
-  background: rgba(248, 240, 222, 0.94); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 251, 240, 0.94); box-shadow: 0 6px 18px rgba(150, 90, 40, 0.3);
   opacity: 0; transform: scale(1.5) rotate(8deg);
   animation: spstamp 0.5s 1.7s cubic-bezier(0.2, 1.6, 0.4, 1) forwards;
 }
 .sp-stroke {
   width: 0; height: min(2.4vh, 15px); margin-top: 8px; border-radius: 99px;
-  background: linear-gradient(90deg, transparent, #ff7d57, #d24a2a 60%, transparent);
+  background: linear-gradient(90deg, transparent, #F07A50, #C7492B 60%, transparent);
   animation: spsweep 0.7s 1.35s cubic-bezier(0.3, 0, 0.2, 1) forwards;
 }
 .sp-tag {
-  margin-top: 18px; font-family: var(--font-kaisho); font-size: clamp(16px, 4.3vw, 22px);
-  color: #f7e6b8; letter-spacing: 0.14em; font-weight: 700; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  margin-top: 18px; font-family: var(--font-kazari); font-size: clamp(16px, 4.3vw, 22px);
+  color: var(--ruri); letter-spacing: 0.14em; font-weight: 700; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
   opacity: 0; animation: spfade 0.9s 1.9s forwards;
 }
 .sp-sub {
-  margin-top: 9px; font-family: var(--font-kaisho); font-size: clamp(12px, 3.3vw, 15px);
-  color: #cdb88a; letter-spacing: 0.18em; opacity: 0; animation: spfade 0.9s 2.15s forwards;
+  margin-top: 9px; font-family: var(--font-kazari); font-size: clamp(12px, 3.3vw, 15px);
+  color: var(--ink2); letter-spacing: 0.18em; opacity: 0; animation: spfade 0.9s 2.15s forwards;
 }
 .sp-start {
-  margin-top: 28px; font-family: var(--font-kaisho); font-weight: 800; font-size: clamp(16px, 4.4vw, 19px); letter-spacing: 0.3em;
-  cursor: pointer; color: #fff; padding: 15px 50px; border-radius: 99px; border: 1px solid #a83b22;
-  background: linear-gradient(180deg, #ff7d57 0%, #ef6238 45%, #d24a2a 100%);
-  box-shadow: 0 8px 24px rgba(210, 74, 42, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  margin-top: 28px; font-family: var(--font-kazari); font-weight: 700; font-size: clamp(16px, 4.4vw, 19px); letter-spacing: 0.3em;
+  cursor: pointer; color: #fff; padding: 15px 50px; border-radius: 99px; border: 1px solid #B8401F;
+  background: linear-gradient(180deg, #F07A50 0%, #E8603C 45%, #C7492B 100%);
+  box-shadow: 0 8px 24px rgba(199, 73, 43, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   opacity: 0; animation: spfade 0.8s 2.5s forwards; transition: transform 0.15s, filter 0.2s;
   -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
 .sp-start:hover { transform: translateY(-2px); filter: brightness(1.06); }
 .sp-start:active { transform: scale(0.96); }
 .sp-omoi {
-  margin-top: 14px; font-family: var(--font-kaisho); font-weight: 700; font-size: clamp(12px, 3.4vw, 14px); letter-spacing: 0.14em;
-  cursor: pointer; color: #f3e6c8; background: rgba(231, 201, 135, 0.1); border: 1px solid rgba(231, 201, 135, 0.4); border-radius: 99px; padding: 9px 24px;
+  margin-top: 14px; font-family: var(--font-kazari); font-weight: 700; font-size: clamp(12px, 3.4vw, 14px); letter-spacing: 0.14em;
+  cursor: pointer; color: var(--ink); background: rgba(255, 253, 246, 0.75); border: 1px solid rgba(156, 110, 46, 0.45); border-radius: 99px; padding: 9px 24px;
   opacity: 0; animation: spfade 0.8s 2.7s forwards; transition: transform 0.15s, background 0.2s;
   -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
 .sp-omoi:active { transform: scale(0.96); }
-.sp-hint { margin-top: 16px; font-size: 12px; color: #9a8a6a; letter-spacing: 0.1em; opacity: 0; animation: spfade 0.8s 2.95s forwards; }
+.sp-hint { margin-top: 16px; font-size: 12px; color: #8F775C; letter-spacing: 0.1em; opacity: 0; animation: spfade 0.8s 2.95s forwards; }
 
 .omoi-ov {
   position: fixed; inset: 0; z-index: 82; display: flex; align-items: center; justify-content: center; padding: 24px;
-  background: rgba(4, 6, 12, 0.72); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); animation: fade-in 0.25s;
+  background: rgba(70, 53, 39, 0.45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); animation: fade-in 0.25s;
 }
 .omoi-card {
   position: relative; max-width: min(92vw, 520px); padding: 30px 26px 24px; border-radius: 18px; text-align: center;
-  background: radial-gradient(130% 120% at 50% 0%, #16203f, #0a0f22 72%); border: 1px solid rgba(231, 201, 135, 0.32);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(231, 201, 135, 0.14); animation: omoi-rise 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+  background: radial-gradient(130% 120% at 50% 0%, #FFFDF6, #FBEDDC 72%); border: 1px solid rgba(156, 110, 46, 0.4);
+  box-shadow: 0 18px 50px rgba(120, 70, 20, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.8); animation: omoi-rise 0.5s cubic-bezier(0.2, 1, 0.3, 1);
 }
-.omoi-title { font-family: var(--font-fude); color: #f7e6b8; font-size: clamp(15px, 4.2vw, 18px); letter-spacing: 0.3em; margin-bottom: 18px; }
+.omoi-title { font-family: var(--font-fude); color: var(--kin-light); font-size: clamp(15px, 4.2vw, 18px); letter-spacing: 0.3em; margin-bottom: 18px; }
 .omoi-lines { display: flex; flex-direction: column; align-items: center; }
 .sp-jo-line {
-  margin: 4px 0; font-family: var(--font-kaisho); font-size: clamp(13px, 3.5vw, 17px); line-height: 1.85; font-weight: 600; letter-spacing: 0.06em;
-  color: #efe2c1; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6); word-break: keep-all; overflow-wrap: break-word;
+  margin: 4px 0; font-family: var(--font-kazari); font-size: clamp(13px, 3.5vw, 17px); line-height: 1.85; font-weight: 600; letter-spacing: 0.06em;
+  color: var(--ink); word-break: keep-all; overflow-wrap: break-word;
   opacity: 0; animation: spline 0.95s cubic-bezier(0.2, 1, 0.3, 1) forwards;
 }
-.sp-jo-line:last-child { margin-top: 16px; color: #f7e6b8; }
+.sp-jo-line:last-child { margin-top: 16px; color: var(--kaki-d); }
 .omoi-close {
-  margin-top: 24px; font-family: var(--font-kaisho); font-weight: 700; font-size: 14px; letter-spacing: 0.2em; cursor: pointer; color: #f3e6c8;
-  background: linear-gradient(180deg, rgba(231, 201, 135, 0.26), rgba(231, 201, 135, 0.06)); border: 1px solid rgba(231, 201, 135, 0.45); border-radius: 99px; padding: 10px 30px;
+  margin-top: 24px; font-family: var(--font-kazari); font-weight: 700; font-size: 14px; letter-spacing: 0.2em; cursor: pointer; color: var(--ink);
+  background: linear-gradient(180deg, rgba(221, 156, 43, 0.22), rgba(221, 156, 43, 0.06)); border: 1px solid rgba(156, 110, 46, 0.5); border-radius: 99px; padding: 10px 30px;
   -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
 .omoi-close:active { transform: scale(0.96); }
@@ -781,18 +801,85 @@ button.chip:hover { border-color: var(--kin); }
   .sp-stage::before { animation: spfade 2s 1.2s forwards; }
 }
 
-/* ===== ② 金の光のハロー（ホームの題字の後ろで回る・暗い金）===== */
+/* ===== ② 金の光のハロー（ホームの題字の後ろで回る・朝の金）===== */
 .title-halo { position: relative; }
 .title-halo::after {
   content: ""; position: absolute; inset: -55% -24%; z-index: -1; border-radius: 50%; pointer-events: none;
   background:
-    radial-gradient(closest-side, rgba(231, 201, 135, 0.34), rgba(231, 201, 135, 0.1) 50%, transparent 72%),
-    repeating-conic-gradient(from 0deg, rgba(231, 201, 135, 0.14) 0deg 5deg, transparent 5deg 17deg);
+    radial-gradient(closest-side, rgba(221, 156, 43, 0.26), rgba(221, 156, 43, 0.08) 50%, transparent 72%),
+    repeating-conic-gradient(from 0deg, rgba(221, 156, 43, 0.12) 0deg 5deg, transparent 5deg 17deg);
   -webkit-mask: radial-gradient(closest-side, #000 24%, rgba(0, 0, 0, 0.5) 52%, transparent 74%);
           mask: radial-gradient(closest-side, #000 24%, rgba(0, 0, 0, 0.5) 52%, transparent 74%);
   animation: sphalo 22s linear infinite, sppulse 4.2s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) { .title-halo::after { animation: none; } }
+
+/* ============================================================
+   ⭐ signature「駒文字タイトル」（共通デザインシステム Fable5）
+   ヒーローの主役の言葉を1文字ずつ本物の五角形の駒に乗せ、
+   開くたび時間差で「コトン…」と盤に並ぶ。文末に朱の落款ふうの丸点。
+   ============================================================ */
+.koma-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: clamp(4px, 1.2vw, 8px);
+}
+.kt-koma {
+  position: relative;
+  width: clamp(46px, 13vw, 62px);
+  aspect-ratio: 0.92;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 4px 3px rgba(120, 70, 20, 0.28));
+  opacity: 0;
+  transform: translateY(-18px) scale(0.92);
+  animation: kt-drop 0.55s cubic-bezier(0.3, 1.5, 0.45, 1) both;
+}
+.kt-koma::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(50% 0%, 83% 13%, 97% 100%, 3% 100%, 17% 13%);
+  background:
+    radial-gradient(82% 54% at 50% 14%, rgba(255, 251, 232, 0.95), transparent 60%),
+    radial-gradient(78% 44% at 50% 104%, rgba(110, 72, 26, 0.14), transparent 64%),
+    linear-gradient(172deg, var(--koma-men) 0%, #EAD6A4 82%, var(--koma-men) 100%);
+  box-shadow: inset 0 0 0 2px rgba(122, 82, 36, 0.55);
+}
+.kt-char {
+  position: relative;
+  padding-top: 16%;
+  font-family: var(--font-kaisho);
+  font-weight: 800;
+  color: #2A1E10;
+  font-size: clamp(24px, 6.8vw, 33px);
+  line-height: 1;
+}
+.kt-rakkan {
+  width: clamp(13px, 3.6vw, 18px);
+  height: clamp(13px, 3.6vw, 18px);
+  margin-left: 2px;
+  margin-bottom: 7px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 35% 30%, var(--kaki) 0%, var(--kaki-d) 80%);
+  box-shadow: 0 2px 6px rgba(199, 73, 43, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  transform: scale(1.6);
+  animation: kt-stamp 0.4s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+@keyframes kt-drop {
+  0% { opacity: 0; transform: translateY(-18px) scale(0.92); }
+  60% { opacity: 1; transform: translateY(2px) scale(1.02); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes kt-stamp {
+  from { opacity: 0; transform: scale(1.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kt-koma, .kt-rakkan { animation: none; opacity: 1; transform: none; }
+}
 
 /* =========================================================
    ▼▼▼ ここから下は ShogiBoard.tsx 専用（変更禁止） ▼▼▼
@@ -877,7 +964,7 @@ button.chip:hover { border-color: var(--kin); }
   height: 92%;
   display: grid;
   place-items: center;
-  filter: drop-shadow(0 1.5px 1px rgba(20, 10, 0, 0.32));
+  filter: drop-shadow(0 2.4px 1.8px rgba(20, 10, 0, 0.4));
   font-size: clamp(15px, 4.9vw, 30px);
   pointer-events: none;
 }
@@ -886,7 +973,7 @@ button.chip:hover { border-color: var(--kin); }
   position: absolute;
   inset: 0;
   clip-path: polygon(50% 0%, 83% 13%, 97% 100%, 3% 100%, 17% 13%);
-  background: linear-gradient(172deg, var(--koma-bg1) 0%, var(--koma-bg2) 82%, var(--koma-bg1) 100%);
+  background: radial-gradient(82% 54% at 50% 14%, rgba(255,251,232,.9), transparent 60%), radial-gradient(78% 44% at 50% 104%, rgba(110,72,26,.16), transparent 64%), linear-gradient(172deg, var(--koma-bg1) 0%, var(--koma-bg2) 82%, var(--koma-bg1) 100%);
   box-shadow: inset 0 0 0 1.5px var(--koma-edge);
 }
 .koma-char {
@@ -898,12 +985,14 @@ button.chip:hover { border-color: var(--kin); }
   line-height: 1;
 }
 .koma-char.is-promoted { color: var(--koma-promoted); }
+/* ひらがな2文字は1文字ずつ縦に積む（⚠writing-mode縦書き＋uprightはSafariで順番が逆さまになるバグ→flex方式に。2026-07-12） */
 .koma-char.is-multi {
-  writing-mode: vertical-rl;
-  text-orientation: upright;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 0.5em;
-  letter-spacing: -0.08em;
-  padding-top: 10%;
+  line-height: 1.02;
+  padding-top: 6%;
 }
 .koma.is-lifted {
   transform: translateY(-2px) scale(1.07);
@@ -913,4 +1002,14 @@ button.chip:hover { border-color: var(--kin); }
   font-size: clamp(15px, 4.6vw, 26px);
   width: 100%;
   height: 100%;
+}
+
+/* ⚡ タップを世界一クラスに（あと付け・2026-06-23 本人「全アプリに入れて」）
+   長押しメニュー抑止＋押した瞬間に反応＋押した手ごたえ。入力欄の貼り付け/選択は温存。
+   :activeは geometry不変の filter(明るさ) ＝盤の駒等が崩れない。本体の見た目/操作は壊さない。 */
+* { -webkit-touch-callout: none; }
+input, textarea { -webkit-touch-callout: default; -webkit-user-select: text; user-select: text; }
+button, a, [role="button"], summary, label, select { touch-action: manipulation; }
+@media (hover: none) {
+  button:active, [role="button"]:active { filter: brightness(0.9); transition: filter .05s ease; }
 }

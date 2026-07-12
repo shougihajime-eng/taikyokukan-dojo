@@ -24,7 +24,7 @@ export default function EvalSlider({ mode, value, onChange, disabled }: Props) {
         <span
           className="font-mincho text-3xl tnum pop-num"
           key={mode === "winrate" ? pct : cp}
-          style={{ textShadow: "0 0 20px rgba(231,201,135,0.35)" }}
+          style={{ textShadow: "0 1px 14px rgba(221,156,43,0.3)" }}
         >
           {mode === "winrate" ? (
             <>

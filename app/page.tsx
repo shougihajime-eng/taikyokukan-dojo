@@ -99,45 +99,40 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* ヒーロー（題字） */}
+        {/* ヒーロー（signature＝駒文字タイトル：一文字ずつ駒に乗せて「コトン…」と並ぶ） */}
         <header className="relative card card-kin card-pad overflow-hidden">
-          {/* 背景：広がる世界（地平のひかり＋星） */}
+          {/* 背景：朝焼けのひかり＋ぼかした巨大な駒の気配 */}
           <span
             aria-hidden
             className="pointer-events-none absolute inset-0 select-none"
             style={{
               background:
-                "radial-gradient(80% 60% at 78% 120%, rgba(247,196,120,0.18), transparent 60%), radial-gradient(50% 40% at 15% 5%, rgba(125,146,230,0.16), transparent 70%)",
+                "radial-gradient(80% 60% at 78% 120%, rgba(232,96,60,0.10), transparent 60%), radial-gradient(50% 40% at 15% 5%, rgba(99,131,188,0.10), transparent 70%)",
             }}
           />
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-5 -bottom-9 font-fude text-[10rem] leading-none text-[var(--kin)] opacity-[0.10] select-none"
-            style={{ textShadow: "0 0 60px rgba(231,201,135,0.5)" }}
+            className="pointer-events-none absolute -right-5 -bottom-9 font-fude text-[10rem] leading-none text-[var(--yamabuki)] opacity-[0.08] select-none"
+            style={{ filter: "blur(2px)" }}
           >
             局
           </span>
-          <div className="relative flex items-stretch gap-4">
-            <div className="flex flex-col justify-center">
-              <p className="label-eyebrow mb-1">将棋・形勢判断トレーニング</p>
-              <h1
-                className="title-halo font-fude text-[clamp(2.6rem,12vw,4rem)] leading-[1.05] tracking-wide text-[var(--kin-light)]"
-                style={{ textShadow: "0 0 30px rgba(231,201,135,0.35)" }}
-              >
-                大局観
-                <br />
-                道場
-              </h1>
-              <p className="mt-3 font-mincho text-sm text-[var(--kin)]">盤上に、世界が広がる。</p>
-              <p className="mt-2 text-sm text-[var(--sumi-soft)] leading-relaxed">
-                盤面を見て「先手がどれくらい有利か」を予想。
-                <br />
-                AIの判定とのズレで、あなたの<b className="text-[var(--shu-bright)]">見る目</b>を数値にします。
-              </p>
-            </div>
-            <div className="flex items-start pt-1">
-              <span className="hanko text-lg">道</span>
-            </div>
+          <div className="relative flex flex-col justify-center">
+            <p className="label-eyebrow mb-2">将棋・形勢判断トレーニング</p>
+            <h1 className="title-halo koma-title" aria-label="大局観道場">
+              {"大局観道場".split("").map((c, i) => (
+                <span key={i} className="kt-koma" style={{ animationDelay: `${0.12 + i * 0.12}s` }} aria-hidden>
+                  <span className="kt-char">{c}</span>
+                </span>
+              ))}
+              <span className="kt-rakkan" style={{ animationDelay: "0.85s" }} aria-hidden />
+            </h1>
+            <p className="mt-3 font-mincho text-sm text-[var(--kin)]">盤上に、世界が広がる。</p>
+            <p className="mt-2 text-sm text-[var(--sumi-soft)] leading-relaxed">
+              盤面を見て「先手がどれくらい有利か」を予想。
+              <br />
+              AIの判定とのズレで、あなたの<b className="text-[var(--shu-bright)]">見る目</b>を数値にします。
+            </p>
           </div>
         </header>
 
@@ -237,7 +232,7 @@ function FeatureRow({ icon, title, body }: { icon: string; title: string; body: 
     <li className="flex items-start gap-3">
       <span
         className="grid place-items-center w-9 h-9 shrink-0 rounded-xl text-lg"
-        style={{ background: "rgba(231,201,135,0.12)", border: "1px solid var(--line)" }}
+        style={{ background: "rgba(221,156,43,0.14)", border: "1px solid var(--line)" }}
         aria-hidden
       >
         {icon}

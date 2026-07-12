@@ -45,8 +45,8 @@ function BiasRow({ name, stat }: { name: string; stat: GroupStat }) {
           className="absolute top-1 bottom-1 rounded-full"
           style={
             pt >= 0
-              ? { left: "50%", width: `${widthPct}%`, background: "linear-gradient(90deg,#ff7d57,#e8492a)" }
-              : { right: "50%", width: `${widthPct}%`, background: "linear-gradient(270deg,#9aa9ee,#5a64a0)" }
+              ? { left: "50%", width: `${widthPct}%`, background: "linear-gradient(90deg,#F07A50,#C7492B)" }
+              : { right: "50%", width: `${widthPct}%`, background: "linear-gradient(270deg,#6383BC,#3D5A96)" }
           }
         />
       </div>

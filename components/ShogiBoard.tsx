@@ -64,7 +64,9 @@ function Koma({
       <span
         className={`koma-char ${promoted && type !== "K" ? "is-promoted" : ""} ${ch.length > 1 ? "is-multi" : ""}`}
       >
-        {ch}
+        {/* 2文字（ひらがな駒）は1文字ずつ縦に積む。
+            ⚠縦書き(writing-mode)はSafariで順番が逆さまになるバグがあるため使わない（2026-07-12・一閃で発見） */}
+        {ch.length > 1 ? ch.split("").map((c, i) => <span key={i}>{c}</span>) : ch}
       </span>
     </span>
   );

@@ -14,6 +14,7 @@ import { buildExplanation, type Explanation } from "@/lib/explain";
 import { weightedScore, meanAbsError, bestStreak, signedBias, biasLabel, STREAK_THRESH } from "@/lib/scoring";
 import { loadStudent, type Student } from "@/lib/student";
 import { useCountUp } from "@/lib/useCountUp";
+import { haptic } from "@/lib/haptics";
 
 interface PositionItem {
   id: string;
@@ -61,18 +62,12 @@ export default function PlayPage() {
     setStudent(loadStudent());
   }, []);
 
-  // 判定したしゅんかんに盤を光らせる＋スマホはそっと振動
+  // 判定したしゅんかんに盤を光らせる＋スマホはそっと手ごたえ
+  // （iPhone/Android どちらでも効く共通の手ごたえ部品を使う。iPadは振動ハードが無いので静か＝正常）
   useEffect(() => {
     if (!reveal) return;
     setBurst(true);
-    try {
-      const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-      if (!reduce && typeof navigator !== "undefined" && "vibrate" in navigator) {
-        navigator.vibrate(reveal.absError <= 0.03 ? [14, 44, 20] : 10);
-      }
-    } catch {
-      /* 振動できない端末は無視 */
-    }
+    haptic(reveal.absError <= 0.03 ? "correct" : "grab");
     const t = setTimeout(() => setBurst(false), 760);
     return () => clearTimeout(t);
   }, [reveal]);
@@ -193,7 +188,7 @@ export default function PlayPage() {
               <p className="label-eyebrow">けいこの準備</p>
               <h1 className="font-mincho text-3xl mt-1">どんな けいこ にする？</h1>
               {!student && (
-                <p className="mt-3 text-xs text-[var(--sumi-soft)] inline-block rounded-full bg-white/5 border border-[var(--line)] px-3 py-1.5">
+                <p className="mt-3 text-xs text-[var(--sumi-soft)] inline-block rounded-full bg-[var(--card)] border border-[var(--line)] px-3 py-1.5">
                   いまは<b className="text-[var(--kin)]">おためし</b>（きろくは残りません）・
                   <Link href="/" className="underline font-bold text-[var(--kin-light)]">ホームでログイン</Link>すると保存されます
                 </p>
@@ -380,7 +375,7 @@ function ScoreCard({ score }: { score: number }) {
       <p className="label-eyebrow">大局観の精度ポイント</p>
       <p
         className="font-mincho text-[clamp(4.5rem,26vw,7rem)] leading-none my-1 text-[var(--kin-light)] tnum"
-        style={{ textShadow: "0 0 40px rgba(231,201,135,0.45)" }}
+        style={{ textShadow: "0 2px 24px rgba(221,156,43,0.35)" }}
       >
         {shown}
       </p>
